@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head , usePage} from '@inertiajs/react';
-import { UserInterface } from '@/Interfaces/UserInterface';
+import { UserInterface, UserListInterface } from '@/Interfaces/UserInterface';
 import DeleteUserButton  from '@/Components/DeleteUserButton';
 import { PageProps } from '@/types';
 import {FlashMessage} from '@/Components/FlashMessage'
@@ -33,22 +33,10 @@ import {
 } from "@/Components/ui/pagination";
 import { Button } from "@/Components/ui/button";
 
-interface PaginationLink {
-    url: string | null;
-    label: string;
-    active: boolean;
-}
+
 
 interface IndexProps {
-    users?: {
-        data: Array<UserInterface>;
-        meta: {
-            links: Array<PaginationLink>;
-            current_page: number;
-            last_page: number;
-
-        };
-    };
+    users?: UserListInterface
 }
 
 interface ExtendedPageProps extends PageProps {
@@ -63,6 +51,7 @@ interface ExtendedPageProps extends PageProps {
 export default function List({ users }: IndexProps) {
     const { props } = usePage<ExtendedPageProps>();
     const { flash, auth } = props;
+    console.log(props);
 
     const authUser = auth.user
 

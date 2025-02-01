@@ -42,7 +42,7 @@ Route::group(
         /**
          * User Routes
          * 1. GET /users - Show a list of users
-         *
+         * 2. DELETE /users/{user} - Delete a user
          */
         Route::group(
             attributes:[
@@ -57,6 +57,7 @@ Route::group(
                     ->name(name:'delete');
             }
         );
+
     }
 );
 
