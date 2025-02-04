@@ -1,10 +1,13 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UserController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PermissionController;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
+use App\Models\Role;
 
 /**
  * Redirect to the dashboard if the user is authenticated
@@ -51,12 +54,53 @@ Route::group(
                 'controller'=>UserController::class
             ],
             routes:function(){
-                Route::get('/', 'index')
-                    ->name('index');
-                Route::delete('/{user}', 'destroy')
+                Route::get(uri:'/', action:'index')
+                    ->name(name:'index');
+                Route::delete(uri:'/{user}', action:'destroy')
                     ->name(name:'delete');
             }
         );
+        /**
+         * Role Routes
+         * 1. GET /roles - Show a list of roles
+         * 2. GET /roles/{role}/edit  - Show a form to edit a role
+         * 3. PATCH /roles/{role} - Update a role
+         *
+         */
+        Route::group(attributes:[
+            'as'=>'role.',
+            'prefix'=>'roles',
+            'controller'=>RoleController::class
+
+        ],routes:function(){
+            Route::get(uri:'/', action:'index')
+                ->name(name:'index');
+            Route::get(uri:'/{role}/edit', action:'edit')
+                ->name(name:'edit');
+            Route::patch(uri:'/{role}', action:'update')
+                ->name(name:'update');
+
+        });
+        /**
+         * Permissions Routes
+         * 1. GET /permissions - Show list of permissions
+         * 2. GET /permissions/{permission}/edit - Show a form to edit a permission
+         * 3. PATCH /permissions/{permission} - Update a permission
+         *
+         */
+        Route::group(attributes:[
+            'as'=>'permission.',
+            'prefix'=>'permissions',
+            'controller'=>PermissionController::class
+        ], routes:function(){
+            Route::get(uri:'/', action:'index')
+                ->name(name:'index');
+            Route::get(uri:'/{permissionGroup}/edit', action:'edit')
+                ->name(name:'edit');
+            Route::patch(uri:'/{permissionGroup}', action:'update')
+                ->name(name:'update');
+
+        });
 
     }
 );

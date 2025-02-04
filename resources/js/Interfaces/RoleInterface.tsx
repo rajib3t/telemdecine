@@ -1,7 +1,10 @@
+import { PaginationLink } from "@/Interfaces/PaginationLinkInterface";
 export interface RoleInterface {
-    id?: number;
+    id: number;
 
     name: string;
+
+    description?: string;
 
 
 }
@@ -11,10 +14,16 @@ export interface RoleInterface {
 
 export interface RoleListInterface {
 
-    roles?:RoleInterface[],
-    meta?:{
-        links?:{
+    data:RoleInterface[],
+    meta: {
+           links: Array<PaginationLink>;
+           current_page: number;
+           last_page: number;
 
-        }
-    }
+       };
+}
+
+export interface RoleFormInterface {
+    name: string;
+    description?: string;
 }

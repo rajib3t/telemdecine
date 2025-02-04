@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import {FlashMessage} from '@/Components/FlashMessage';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, usePage, router } from '@inertiajs/react';
-import { RoleInterface, RoleListInterface } from '@/Interfaces/RoleInterface';
-import { PageProps } from '@/types';
+import {PermissionInterface, PermissionsListInterface, PermissionGroupsListInterface, PermissionGroupInterface} from '@/Interfaces/PermissionInterface'
 import {FlashMessageState} from '@/Interfaces/FlashMessageState';
+import { Head , usePage, router} from '@inertiajs/react';
+import {PageProps} from '@/types'
+import {FlashMessage} from '@/Components/FlashMessage'
 import RenderPaginationItem from '@/Components/RenderPaginationItem';
 // Icon import
 import { Edit, Search, RotateCcw} from 'lucide-react';
@@ -15,7 +15,6 @@ import {
     CardTitle,
     CardContent,
 } from '@/Components/ui/card';
-
 // Shadcn Component Table
 import {
     Table,
@@ -30,16 +29,14 @@ import {
     Pagination,
     PaginationContent
 } from "@/Components/ui/pagination";
-// Shadcn Component Button
+// Shadcn
 import { Button } from '@/Components/ui/button';
 import {Input} from '@/Components/ui/input';
-import { url } from 'inspector';
 // Page Popery  Interface
 interface IndexProps {
-    roles: RoleListInterface;
+    permissionsGroups: PermissionGroupsListInterface;
     filters: any;
 }
-
 // Global Page Property
 interface ExtendedPageProps extends PageProps {
     flash?: {
@@ -48,13 +45,14 @@ interface ExtendedPageProps extends PageProps {
     };
 
 }
-// Role List function
-export default function RoleList({ roles, filters }: IndexProps) {
+export default function PermissionList({permissionsGroups,filters }:IndexProps) {
+
+
     // Page Props
     const { props } = usePage<ExtendedPageProps>();
     // Extract flash message  from property
     const { flash } = props;
-    // Flash Message
+     // Flash Message
     const [flashMessage, setFlashMessage] = useState<FlashMessageState | null>(null);
     // Set Flash Message
     useEffect(() => {
@@ -67,21 +65,16 @@ export default function RoleList({ roles, filters }: IndexProps) {
             return () => clearTimeout(timer);
         }
     }, [flash]);
-    // Edit Handel
-    const handleEdit = (roleId : number)=>{
-        let url = route('role.edit',roleId)
-        window.location.href = url;
 
-    }
     const [searchParams, setSearchParams] = useState({
-            name: filters?.name || '',
+                name: filters?.name || '',
 
-        });
+            });
     // Search handle
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
-            route('role.index'),
+            route('permission.index'),
             searchParams,
             { preserveState: true }
         );
@@ -94,7 +87,7 @@ export default function RoleList({ roles, filters }: IndexProps) {
         });
         // Redirect to the base users page without any filters
         router.get(
-            route('role.index'),
+            route('permission.index'),
             {},
             { preserveState: true }
         );
@@ -107,22 +100,30 @@ export default function RoleList({ roles, filters }: IndexProps) {
             [name]: value
         }));
     };
+    // Edit Handel
+    const handleEdit = (permissionGroupId : number)=>{
+        console.log(permissionGroupId);
+
+        let url = route('permission.edit',permissionGroupId)
+        window.location.href = url;
+
+    }
     return (
         <AuthenticatedLayout>
-            <Head title="Roles" />
-            <Card>
-                    {flashMessage && (
-                        <div className="mb-4">
-                            <FlashMessage
-                                type={flashMessage.type}
-                                message={flashMessage.message}
-                            />
-                        </div>
-                    )}
-                    <CardHeader>
-                        <CardTitle>Role List</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+             <Head title="Permissions" />
+             <Card>
+                {flashMessage && (
+                    <div className="mb-4">
+                        <FlashMessage
+                            type={flashMessage.type}
+                            message={flashMessage.message}
+                        />
+                    </div>
+                )}
+                <CardHeader>
+                    <CardTitle>Permission List</CardTitle>
+                </CardHeader>
+                <CardContent>
                     <form onSubmit={handleSearch} className="space-y-4 mb-6">
                         <div className="flex flex-col sm:flex-row gap-4">
                             <div className="flex-1">
@@ -152,53 +153,53 @@ export default function RoleList({ roles, filters }: IndexProps) {
                             </div>
                         </div>
                     </form>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead className="w-1/4 font-bold">Name</TableHead>
-                                    <TableHead className="w-1/4 font-bold">Action</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                            {roles?.data?.length ? (
-                                    roles.data.map((role: RoleInterface) => (
-                                        <TableRow key={role.id}>
-                                            <TableCell>{role.name}</TableCell>
-                                            <TableCell>
-                                                <div className="flex gap-2">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => handleEdit(role.id)}
-                                                >
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={2} className="text-center h-24 text-muted-foreground">
-                                            No roles found
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-1/4 font-bold">Name</TableHead>
+                                <TableHead className="w-1/4 font-bold">Action</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {permissionsGroups?.data?.length ? (
+                                permissionsGroups.data.map((permissionsGroup: PermissionGroupInterface) => (
+                                    <TableRow key={permissionsGroup.id}>
+                                        <TableCell>{permissionsGroup.name}</TableCell>
+                                        <TableCell>
+                                            <div className="flex gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleEdit(permissionsGroup.id)}
+                                            >
+                                                <Edit className="h-4 w-4" />
+                                            </Button>
+                                            </div>
                                         </TableCell>
                                     </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                        {roles?.meta.links && roles.data.length > 0 && (
-                            <div className="mt-4">
-                                <Pagination>
-                                    <PaginationContent>
-                                        {roles.meta.links.map((link, index) =>
-                                                RenderPaginationItem(link,index)
-                                        )}
-                                    </PaginationContent>
-                                </Pagination>
-                            </div>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={2} className="text-center h-24 text-muted-foreground">
+                                        No permission found
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                    {permissionsGroups?.meta.links && permissionsGroups.data.length > 0 && (
+                        <div className="mt-4">
+                            <Pagination>
+                                <PaginationContent>
+                                    {permissionsGroups.meta.links.map((link, index) =>
+                                            RenderPaginationItem(link,index)
+                                    )}
+                                </PaginationContent>
+                            </Pagination>
+                        </div>
                         )}
-                    </CardContent>
-            </Card>
+                </CardContent>
+             </Card>
         </AuthenticatedLayout>
     );
 }

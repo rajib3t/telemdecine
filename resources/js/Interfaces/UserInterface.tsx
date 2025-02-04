@@ -11,7 +11,7 @@ export interface UserInterface {
 
 
 export interface  UserListInterface {
-    users: UserInterface[];
+    data: UserInterface[];
     meta: {
         links: Array<PaginationLink>;
         current_page: number;

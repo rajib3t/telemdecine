@@ -20,10 +20,13 @@ class UserController extends Controller
     public function index(Request $request) {
 
         $name = $request->name;
-
+        $email = $request->email;
         $users = User::when($request->name, function ($query, $name) {
             $query->where('name', 'like', '%'.$name.'%');
 
+        })
+        ->when($request->email, function($query, $email){
+            $query->where('email', 'like', '%'.$email.'%');
         })
         ->orderBy('id', 'desc')
         ->paginate(10)->onEachSide(1);

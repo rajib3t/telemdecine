@@ -14,7 +14,7 @@ import {
   SheetTrigger,
 } from "@/Components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-import { Menu, User, Home, Settings, LogOut, Bell, LucideIcon, Users, ChevronDown, Building, Shield } from "lucide-react";
+import { Menu, User, Home, Settings, LogOut, Bell, LucideIcon, Users, ChevronDown, Building, Shield, List } from "lucide-react";
 import { Link, usePage } from '@inertiajs/react';
 
 interface MenuItem {
@@ -41,15 +41,27 @@ const defaultMenuItems: MenuItem[] = [
   {
     icon: Home,
     label: 'Dashboard',
-    href: '/dashboard'
+    href: route('dashboard')
   },
   {
     icon: Users,
     label: 'User Management',
     submenus: [
-      { icon: Users, label: 'All Users', href: route('user.index') },
-      { icon: Shield, label: 'Roles', href: '/roles' },
-      { icon: Settings, label: 'Permissions', href: '/permissions' }
+        { icon: Users, label: 'All Users', href: route('user.index') },
+        {
+            icon: Shield,
+            label: 'Roles',
+            submenus:[
+                { icon: List, label: 'List', href: route('role.index') },
+            ]
+        },
+        {
+            icon: Settings,
+            label: 'Permissions',
+            submenus:[
+                { icon:List, label:'List', href : route('permission.index') }
+            ]
+        }
     ]
   },
   {
