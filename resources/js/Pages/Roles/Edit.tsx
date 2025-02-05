@@ -1,13 +1,16 @@
+"use client"
 import {useState, useEffect, FormEventHandler} from 'react';
+import axios from 'axios';
 import { RoleInterface } from "@/Interfaces/RoleInterface";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head , usePage, useForm, router} from "@inertiajs/react";
+import { Head , usePage, useForm, router, Deferred} from "@inertiajs/react";
 import {FlashMessageState} from '@/Interfaces/FlashMessageState';
 import {FlashMessage} from '@/Components/FlashMessage';
 import {PageProps}  from '@/types';
 import {PermissionGroupsListInterface, PermissionGroupInterface, PermissionInterface} from '@/Interfaces/PermissionInterface';
 import { Search, RotateCcw } from 'lucide-react';
 import RenderPaginationItem from '@/Components/RenderPaginationItem';
+import BreadcrumbComponent from '@/Components/Breadcrumb';
 import {
     Card,
     CardHeader,
@@ -33,6 +36,9 @@ import { Label } from  '@/Components/ui/label';
 import {Textarea } from '@/Components/ui/textarea';
 import { Button } from '@/Components/ui/button';
 import { Switch } from '@/Components/ui/switch';
+// For Toast import shadcn toast
+import { useToast } from "@/hooks/use-toast"
+
 interface EditProps {
     role: {
         data : RoleInterface
@@ -75,7 +81,7 @@ export default function EditRole({role, permissionGroups, filters}: EditProps) {
     const { props } = usePage<ExtendedPageProps>();
     const { flash } = props;
     const [flashMessage, setFlashMessage] = useState<FlashMessageState | null>(null);
-
+    const { toast } = useToast();
     useEffect(() => {
         if (flash?.success || flash?.error) {
             const type = flash.success ? "success" : "error";
@@ -151,16 +157,76 @@ export default function EditRole({role, permissionGroups, filters}: EditProps) {
         }));
     };
 
-    const [enabledPermissions, setEnabledPermissions] = useState<number[]>([]);
+    const [loadingStates, setLoadingStates] = useState<Record<number, boolean>>({});
+    const [permissionStates, setPermissionStates] = useState<Record<number, boolean>>({});
+    // Initialize permission states from role data
+    useEffect(() => {
+        const initialStates = role.data.permissions?.reduce((acc, perm) => ({
+            ...acc,
+            [perm.id]: true
+        }), {}) || {};
+        setPermissionStates(initialStates);
+    }, [role.data.permissions]);
+    const handlePermissionToggle = async (permId: number, checked: boolean) => {
+        setLoadingStates(prev => ({ ...prev, [permId]: true }));
 
-    const handleSwitchChange = (permId: number) => {
 
 
-    };
+        try {
+          const response = await axios.patch(route('role.add.permission', role.data.id), {
+            permission: permId.toString(),
+            checked:checked,
+            _method: 'PATCH'
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          });
+          console.log(response);
+
+          if (response.status === 200) {
+            // Update local state immediately after successful request
+            setPermissionStates(prev => ({
+                ...prev,
+                [permId]: checked
+            }));
+            toast({
+                title:'Success',
+                description: response.data.message,
+            });
+          }
+        } catch (error) {
+            // Revert the toggle state on error
+            setPermissionStates(prev => ({
+                ...prev,
+                [permId]: !checked
+            }));
+          console.error('Error updating permission:', error);
+          toast({
+            title: "Error",
+            description: "Failed to update permission. Please try again.",
+            variant: "destructive",
+          });
+        } finally {
+          setLoadingStates(prev => ({ ...prev, [permId]: false }));
+        }
+      };
+
+
+      const breadcrumbs = [
+        { name: "Dashboard", href: route('dashboard') },
+        { name: "Roles", href: route('role.index') },
+        { name: "Edit", href: null }
+    ];
     return (
         <AuthenticatedLayout>
             <Head title={`Edit Role: ${role.data.name}`} />
+
             <div className="space-y-6">
+
+            <BreadcrumbComponent breadcrumbs={breadcrumbs} />
                 <Card>
                     {flashMessage && (
                         <div className="mb-4">
@@ -210,6 +276,7 @@ export default function EditRole({role, permissionGroups, filters}: EditProps) {
                         </form>
                     </CardContent>
                 </Card>
+
                 {role.data.name !== 'Admin' ?  (
                       <Card>
                       <CardHeader>
@@ -238,7 +305,7 @@ export default function EditRole({role, permissionGroups, filters}: EditProps) {
                                           type="button"
                                           variant="outline"
                                           onClick={handleReset}
-                                          className="w-full sm:w-auto"
+                                          className="w-full sm:w-auto "
                                       >
                                           <RotateCcw className="h-4 w-4 mr-2" />
                                           Reset
@@ -259,21 +326,34 @@ export default function EditRole({role, permissionGroups, filters}: EditProps) {
                                           <TableRow key={permissionsGroup.id}>
                                               <TableCell>{permissionsGroup.name}</TableCell>
                                               <TableCell>
-                                              <div className="flex gap-2">
+                                                <div className="flex gap-2">
                                                     {permissionsGroup.permissions.map((perm: PermissionInterface) => {
                                                         const name = perm.name.split('.')[1];
+
+                                                        const isLoading = loadingStates[perm.id] || false;
+                                                        const isChecked = permissionStates[perm.id] || false;
                                                         return (
-                                                        <div className="space-y-0.5" key={perm.id}>
-                                                            <Label htmlFor={`perm-${perm.id}`}>{name}</Label>
+                                                            <div
+                                                            key={perm.id}
+                                                            className="flex items-center space-x-2 min-w-[160px]"
+                                                          >
                                                             <Switch
                                                             id={`perm-${perm.id}`}
-
-                                                            onCheckedChange={() => handleSwitchChange(perm.id)}
+                                                            onCheckedChange={(checked) => handlePermissionToggle(perm.id, checked)}
+                                                            checked={isChecked}
+                                                            disabled={isLoading}
                                                             />
-                                                        </div>
+                                                            <Label
+                                                              htmlFor={`perm-${perm.id}`}
+                                                              className="text-sm font-medium cursor-pointer"
+                                                            >
+                                                              {name}
+                                                            </Label>
+                                                          </div>
                                                         );
                                                     })}
-                                                    </div>
+
+                                                </div>
                                               </TableCell>
                                           </TableRow>
                                       ))

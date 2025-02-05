@@ -1,11 +1,13 @@
 import { PaginationLink } from "@/Interfaces/PaginationLinkInterface";
+import {  PermissionInterface} from "./PermissionInterface";
+interface PermissionsListInterface extends Array<PermissionInterface> {}
 export interface RoleInterface {
     id: number;
 
     name: string;
 
     description?: string;
-
+    permissions?:PermissionsListInterface
 
 }
 

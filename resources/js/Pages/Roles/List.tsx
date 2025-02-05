@@ -6,6 +6,8 @@ import { RoleInterface, RoleListInterface } from '@/Interfaces/RoleInterface';
 import { PageProps } from '@/types';
 import {FlashMessageState} from '@/Interfaces/FlashMessageState';
 import RenderPaginationItem from '@/Components/RenderPaginationItem';
+import BreadcrumbComponent from '@/Components/Breadcrumb';
+import DeleteRoleButton from '@/Components/DeleteRoleButton'
 // Icon import
 import { Edit, Search, RotateCcw} from 'lucide-react';
 // Shadcn  Component Card
@@ -107,9 +109,16 @@ export default function RoleList({ roles, filters }: IndexProps) {
             [name]: value
         }));
     };
+    const breadcrumbs = [
+        { name: "Dashboard", href: route('dashboard') },
+        { name: "Roles", href: null },
+
+    ];
     return (
         <AuthenticatedLayout>
             <Head title="Roles" />
+            <div className="space-y-6">
+            <BreadcrumbComponent breadcrumbs={breadcrumbs} />
             <Card>
                     {flashMessage && (
                         <div className="mb-4">
@@ -173,6 +182,13 @@ export default function RoleList({ roles, filters }: IndexProps) {
                                                 >
                                                     <Edit className="h-4 w-4" />
                                                 </Button>
+                                                 {role.name !== 'Admin' &&(
+                                                    <DeleteRoleButton
+                                                        role={role}
+                                                        roleName={role.name}
+                                                        page={roles.meta.current_page}
+                                                    />
+                                                )}
                                                 </div>
                                             </TableCell>
                                         </TableRow>
@@ -199,6 +215,8 @@ export default function RoleList({ roles, filters }: IndexProps) {
                         )}
                     </CardContent>
             </Card>
+            </div>
+
         </AuthenticatedLayout>
     );
 }

@@ -65,7 +65,8 @@ Route::group(
          * 1. GET /roles - Show a list of roles
          * 2. GET /roles/{role}/edit  - Show a form to edit a role
          * 3. PATCH /roles/{role} - Update a role
-         *
+         * 4. PATCH /roles/{role}/add-permission - add permission to the role
+         * 5. DELETE /roles/{role} -
          */
         Route::group(attributes:[
             'as'=>'role.',
@@ -75,10 +76,16 @@ Route::group(
         ],routes:function(){
             Route::get(uri:'/', action:'index')
                 ->name(name:'index');
+            Route::get(uri:'create', action:'create')
+                ->name(name:'create');
             Route::get(uri:'/{role}/edit', action:'edit')
                 ->name(name:'edit');
             Route::patch(uri:'/{role}', action:'update')
                 ->name(name:'update');
+            Route::patch(uri:'{role}/add-permission', action:'add_permission')
+                ->name(name:'add.permission');
+            Route::delete(uri:'/{role}', action:'destroy')
+                ->name(name:'delete');
 
         });
         /**
@@ -86,7 +93,7 @@ Route::group(
          * 1. GET /permissions - Show list of permissions
          * 2. GET /permissions/{permission}/edit - Show a form to edit a permission
          * 3. PATCH /permissions/{permission} - Update a permission
-         *
+         * 4. PATCH /permissions/{permission}/add-role - add role to the permission
          */
         Route::group(attributes:[
             'as'=>'permission.',
@@ -99,6 +106,8 @@ Route::group(
                 ->name(name:'edit');
             Route::patch(uri:'/{permissionGroup}', action:'update')
                 ->name(name:'update');
+            Route::patch(uri:'{permissionGroup}/add-role', action:'add_role')
+                ->name(name:'add.role');
 
         });
 

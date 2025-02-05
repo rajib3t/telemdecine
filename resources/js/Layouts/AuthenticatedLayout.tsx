@@ -14,9 +14,9 @@ import {
   SheetTrigger,
 } from "@/Components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-import { Menu, User, Home, Settings, LogOut, Bell, LucideIcon, Users, ChevronDown, Building, Shield, List } from "lucide-react";
+import { Menu, User, Home, Settings, LogOut, Bell, LucideIcon, Users, ChevronDown, Building, Shield, List, Plus } from "lucide-react";
 import { Link, usePage } from '@inertiajs/react';
-
+import { Toaster } from "@/Components/ui/toaster";
 interface MenuItem {
   icon: LucideIcon;
   label: string;
@@ -53,6 +53,7 @@ const defaultMenuItems: MenuItem[] = [
             label: 'Roles',
             submenus:[
                 { icon: List, label: 'List', href: route('role.index') },
+                { icon: Plus, label: 'Create', href: route('role.create') },
             ]
         },
         {
@@ -249,7 +250,8 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
   ), [brandName]);
 
   return (
-    <div className="flex min-h-screen">
+  <>
+  <div className="flex min-h-screen">
       {/* Desktop Sidebar */}
       <div className="hidden h-screen w-64 border-r bg-background p-4 lg:block">
         <div className="flex h-full flex-col">
@@ -304,7 +306,12 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
           {children}
         </main>
       </div>
+
     </div>
+    <Toaster />
+  </>
+
+
   );
 };
 
