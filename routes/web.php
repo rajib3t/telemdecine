@@ -7,7 +7,7 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Role;
+
 
 /**
  * Redirect to the dashboard if the user is authenticated
@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
 
 /**
  * User Authentication Routes
- * User Route Group
+ *
  */
 Route::group(
     attributes:[
@@ -45,7 +45,11 @@ Route::group(
         /**
          * User Routes
          * 1. GET /users - Show a list of users
-         * 2. DELETE /users/{user} - Delete a user
+         * 2. GET /users/create - To create user form page
+         * 4. POST /users - Store a new user
+         * 5. GET /users/{user}/edit - Show form to edit a user
+         * 6. PATCH /users/{user} - Update a user
+         * 7. DELETE /users/{user} - Delete a user
          */
         Route::group(
             attributes:[
@@ -56,6 +60,16 @@ Route::group(
             routes:function(){
                 Route::get(uri:'/', action:'index')
                     ->name(name:'index');
+                Route::get(uri:'create', action:'create')
+                    ->name(name:'create');
+                Route::post(uri:'store', action:'store')
+                    ->name(name:'store');
+                Route::get(uri:'{user}/edit', action:'edit')
+                    ->name(name:'edit');
+                Route::patch(uri:'{user}', action:'update')
+                    ->name(name:'update');
+
+
                 Route::delete(uri:'/{user}', action:'destroy')
                     ->name(name:'delete');
             }

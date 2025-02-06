@@ -44,6 +44,7 @@ export default function RoleCreate() {
         <AuthenticatedLayout>
             <Head title="Create Role" />
             <div className="space-y-6">
+            <BreadcrumbComponent breadcrumbs={breadcrumbs} />
                 {flashMessage && (
                     <div className="mb-4">
                         <FlashMessage
@@ -52,7 +53,7 @@ export default function RoleCreate() {
                         />
                     </div>
                 )}
-                <BreadcrumbComponent breadcrumbs={breadcrumbs} />
+
                 <Card>
                     <CardHeader>
                         <CardTitle>Create Role</CardTitle>

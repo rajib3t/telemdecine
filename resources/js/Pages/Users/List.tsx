@@ -8,6 +8,7 @@ import { FlashMessage } from '@/Components/FlashMessage';
 import { Trash, Edit, Search, RotateCcw } from 'lucide-react';
 import RenderPaginationItem from '@/Components/RenderPaginationItem';
 import {FlashMessageState} from '@/Interfaces/FlashMessageState';
+import BreadcrumbComponent from '@/Components/Breadcrumb';
 import {
     Card,
     CardHeader,
@@ -44,9 +45,7 @@ interface ExtendedPageProps extends PageProps {
         success?: string;
         error?: string;
     };
-    auth: {
-        user: UserInterface;
-    };
+
 }
 
 export default function UserList({ users, filters }: IndexProps) {
@@ -108,131 +107,139 @@ export default function UserList({ users, filters }: IndexProps) {
         }
     }, [flash]);
 
+    const breadcrumbs = [
+        { name: "Dashboard", href: route('dashboard') },
+        { name: "Users", href: null },
 
+    ];
 
     return (
         <AuthenticatedLayout>
             <Head title="Users" />
-            <Card>
-                {flashMessage && (
-                    <div className="mb-4">
-                        <FlashMessage
-                            type={flashMessage.type}
-                            message={flashMessage.message}
-                        />
-                    </div>
-                )}
-
-                <CardHeader>
-                    <CardTitle>Users List</CardTitle>
-                </CardHeader>
-                <CardContent>
-                <form onSubmit={handleSearch} className="space-y-4 mb-6">
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <div className="flex-1">
-                                <Input
-                                    type="text"
-                                    name="name"
-                                    placeholder="Search by name..."
-                                    value={searchParams.name}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className="flex-1">
-                                <Input
-                                    type="text"
-                                    name="email"
-                                    placeholder="Search by email..."
-                                    value={searchParams.email}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div className="flex gap-2">
-                                <Button type="submit" className="w-full sm:w-auto">
-                                    <Search className="h-4 w-4 mr-2" />
-                                    Search
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={handleReset}
-                                    className="w-full sm:w-auto"
-                                >
-                                    <RotateCcw className="h-4 w-4 mr-2" />
-                                    Reset
-                                </Button>
-                            </div>
-                        </div>
-                    </form>
-
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-1/4">Name</TableHead>
-                                <TableHead className="w-1/4">Email</TableHead>
-                                <TableHead className="w-1/4">Roles</TableHead>
-                                <TableHead className="w-1/4">Action</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {users?.data?.length ? (
-                                users.data.map((user:UserInterface) => (
-                                    <TableRow key={user.id}>
-                                        <TableCell>{user.name}</TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>
-                                            {user.roles.length > 0 && user.roles.map((role: RoleInterface) => (
-                                                <span key={role.id}>
-                                                    {role.name}
-                                                </span>
-                                            ))}
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex gap-2">
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => handleEdit(user.id)}
-                                                >
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                {authUser.id !== user.id && (
-                                                    <DeleteUserButton
-                                                        user={user}
-                                                        userName={user.name}
-                                                        page={users.meta.current_page}
-                                                    />
-                                                )}
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell
-                                        colSpan={3}
-                                        className="text-center h-24 text-muted-foreground"
-                                    >
-                                        No users found
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-
-                    {users?.meta.links && users.data.length > 0 && (
-                        <div className="mt-4">
-                            <Pagination>
-                                <PaginationContent>
-                                    {users.meta.links.map((link, index) =>
-                                            RenderPaginationItem(link,index)
-                                    )}
-                                </PaginationContent>
-                            </Pagination>
+            <div className="space-y-6">
+                <BreadcrumbComponent breadcrumbs={breadcrumbs} />
+                <Card>
+                    {flashMessage && (
+                        <div className="mb-4">
+                            <FlashMessage
+                                type={flashMessage.type}
+                                message={flashMessage.message}
+                            />
                         </div>
                     )}
-                </CardContent>
-            </Card>
+
+                    <CardHeader>
+                        <CardTitle>Users List</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                    <form onSubmit={handleSearch} className="space-y-4 mb-6">
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <div className="flex-1">
+                                    <Input
+                                        type="text"
+                                        name="name"
+                                        placeholder="Search by name..."
+                                        value={searchParams.name}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <Input
+                                        type="text"
+                                        name="email"
+                                        placeholder="Search by email..."
+                                        value={searchParams.email}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button type="submit" className="w-full sm:w-auto">
+                                        <Search className="h-4 w-4 mr-2" />
+                                        Search
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={handleReset}
+                                        className="w-full sm:w-auto"
+                                    >
+                                        <RotateCcw className="h-4 w-4 mr-2" />
+                                        Reset
+                                    </Button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-1/4">Name</TableHead>
+                                    <TableHead className="w-1/4">Email</TableHead>
+                                    <TableHead className="w-1/4">Roles</TableHead>
+                                    <TableHead className="w-1/4">Action</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {users?.data?.length ? (
+                                    users.data.map((user:UserInterface) => (
+                                        <TableRow key={user.id}>
+                                            <TableCell>{user.name}</TableCell>
+                                            <TableCell>{user.email}</TableCell>
+                                            <TableCell>
+                                                {user.roles.length > 0 && user.roles.map((role: RoleInterface) => (
+                                                    <span key={role.id}>
+                                                        {role.name}
+                                                    </span>
+                                                ))}
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex gap-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleEdit(user.id)}
+                                                    >
+                                                        <Edit className="h-4 w-4" />
+                                                    </Button>
+                                                    {authUser.id !== user.id && (
+                                                        <DeleteUserButton
+                                                            user={user}
+                                                            userName={user.name}
+                                                            page={users.meta.current_page}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell
+                                            colSpan={3}
+                                            className="text-center h-24 text-muted-foreground"
+                                        >
+                                            No users found
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+
+                        {users?.meta.links && users.data.length > 0 && (
+                            <div className="mt-4">
+                                <Pagination>
+                                    <PaginationContent>
+                                        {users.meta.links.map((link, index) =>
+                                                RenderPaginationItem(link,index)
+                                        )}
+                                    </PaginationContent>
+                                </Pagination>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
+
         </AuthenticatedLayout>
     );
 }

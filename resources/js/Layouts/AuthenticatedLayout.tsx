@@ -54,7 +54,13 @@ const defaultMenuItems: MenuItem[] = [
                 icon:List,
                 label:'List',
                 href:route('user.index'),
-                routeName:['user.index']
+                routeName:['user.index','user.edit']
+            },
+            {
+                icon:Plus,
+                label:'Create',
+                href:route('user.create'),
+                routeName:['user.create']
             }
         ]
       },

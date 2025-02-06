@@ -222,7 +222,7 @@ export default function EditRole({role, permissionGroups, filters}: EditProps) {
     ];
     return (
         <AuthenticatedLayout>
-            <Head title={`Edit Role: ${role.data.name}`} />
+            <Head title={`Edit Role : ${role.data.name}`} />
 
             <div className="space-y-6">
 
@@ -237,7 +237,7 @@ export default function EditRole({role, permissionGroups, filters}: EditProps) {
                         </div>
                     )}
                     <CardHeader>
-                        <CardTitle>Edit Role: {role.data.name}</CardTitle>
+                        <CardTitle>Edit Role : {role.data.name}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={submit}>
