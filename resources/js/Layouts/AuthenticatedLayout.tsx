@@ -18,7 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { Menu, User, Home, Settings, LogOut, Bell, LucideIcon, Users, Building, Shield, List, Plus } from "lucide-react";
 import { Link, usePage } from '@inertiajs/react';
 import { Toaster } from "@/Components/ui/toaster";
-import { cn } from "@/lib/utils";
+
 
 interface MenuItem {
   icon: LucideIcon;
