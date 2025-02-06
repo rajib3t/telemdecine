@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Button } from "@/Components/ui/button";
+import NavItem from '@/Components/NavItem';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,7 @@ interface MenuItem {
   label: string;
   href?: string;
   submenus?: MenuItem[];
+  routeName?:string;
 }
 
 interface NavItemProps extends MenuItem {
@@ -41,19 +43,20 @@ const defaultMenuItems: MenuItem[] = [
   {
     icon: Home,
     label: 'Dashboard',
-    href: route('dashboard')
+    href: route('dashboard'),
+    routeName : 'dashboard'
   },
   {
     icon: Users,
     label: 'User Management',
     submenus: [
-        { icon: Users, label: 'All Users', href: route('user.index') },
+        { icon: Users, label: 'All Users', href: route('user.index'),routeName:'user.index'  },
         {
             icon: Shield,
             label: 'Roles',
             submenus:[
-                { icon: List, label: 'List', href: route('role.index') },
-                { icon: Plus, label: 'Create', href: route('role.create') },
+                { icon: List, label: 'List', href: route( 'role.index'), routeName:'role.index' },
+                { icon: Plus, label: 'Create', href: route('role.create'), routeName:'role.create' },
             ]
         },
         {
@@ -75,87 +78,7 @@ const defaultMenuItems: MenuItem[] = [
   }
 ];
 
-const ButtonContent: React.FC<{ icon: LucideIcon; label: string; isSubmenuOpen?: boolean }> = ({
-  icon: Icon,
-  label,
-  isSubmenuOpen
-}) => (
-  <>
-    <Icon className="h-4 w-4" />
-    <span className="flex-1 text-left">{label}</span>
-    {isSubmenuOpen !== undefined && (
-      <ChevronDown
-        className={`h-4 w-4 transition-transform duration-200
-          ${isSubmenuOpen ? 'rotate-180' : ''}`}
-      />
-    )}
-  </>
-);
 
-
-const NavItem: React.FC<NavItemProps> = ({
-  icon,
-  label,
-  href,
-  submenus = [], // Provide default empty array
-  depth = 0,
-  isActive,
-  onItemClick
-}) => {
-  const [isSubmenuOpen, setIsSubmenuOpen] = useState(false);
-  const hasSubmenus = submenus.length > 0;
-
-  const handleClick = useCallback(() => {
-    if (hasSubmenus) {
-      setIsSubmenuOpen(prev => !prev);
-    } else if (href) {
-      onItemClick(href);
-    }
-  }, [hasSubmenus, href, onItemClick]);
-
-  return (
-    <div className="space-y-1">
-      {href && !hasSubmenus ? (
-        <Button
-          variant={isActive ? "secondary" : "ghost"}
-          className={`w-full justify-start gap-2 ${depth > 0 ? 'ml-4' : ''}`}
-          asChild
-        >
-          <Link href={href} onClick={handleClick}>
-            <ButtonContent icon={icon} label={label} />
-          </Link>
-        </Button>
-      ) : (
-        <Button
-          variant={isActive ? "secondary" : "ghost"}
-          className={`w-full justify-start gap-2 ${depth > 0 ? 'ml-4' : ''}
-            ${hasSubmenus ? 'font-medium' : ''}`}
-          onClick={handleClick}
-        >
-          <ButtonContent icon={icon} label={label} isSubmenuOpen={hasSubmenus ? isSubmenuOpen : undefined} />
-        </Button>
-      )}
-
-      {hasSubmenus && (
-        <div className={`overflow-hidden transition-all duration-200
-          ${isSubmenuOpen ? 'max-h-96' : 'max-h-0'}`}
-        >
-          <div className="ml-4 space-y-1 pt-1">
-            {submenus.map((submenu) => (
-              <NavItem
-                key={submenu.label}
-                {...submenu}
-                depth={depth + 1}
-                isActive={isActive}
-                onItemClick={onItemClick}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
 
 const NotificationBadge: React.FC<{ count: number }> = ({ count }) => (
   count > 0 ? (
