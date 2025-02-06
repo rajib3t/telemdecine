@@ -8,11 +8,12 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -203,6 +204,27 @@ class UserController extends Controller
 
     }
 
+    public function update_password(Request $request , User $user)
+    {
+        $validated = $request->validate([
+
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
+
+        try {
+            DB::transaction(callback:function() use ($validated, $user){
+                $user->update(attributes:[
+                    'password'=>Hash::make(value:$validated['password'])
+                ]);
+            });
+            return Redirect::route(route:'user.edit', parameters:$user)
+                ->with(key:'success', value:'Password update successfully');
+        } catch (\Throwable $th) {
+            Log::error(message:$th->getMessage() . 'on the ' . $th->getFile() .' line no '.$th->getLine());
+            return back()
+                ->with(key:'error', value:'Something is wrong');
+        }
+    }
 
 
     /**

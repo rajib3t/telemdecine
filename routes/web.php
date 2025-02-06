@@ -49,7 +49,8 @@ Route::group(
          * 4. POST /users - Store a new user
          * 5. GET /users/{user}/edit - Show form to edit a user
          * 6. PATCH /users/{user} - Update a user
-         * 7. DELETE /users/{user} - Delete a user
+         * 7. PATCH /users/{user}/password-update - Update password
+         * 8. DELETE /users/{user} - Delete a user
          */
         Route::group(
             attributes:[
@@ -68,8 +69,8 @@ Route::group(
                     ->name(name:'edit');
                 Route::patch(uri:'{user}', action:'update')
                     ->name(name:'update');
-
-
+                Route::patch(uri:'{user}/password-update', action:'update_password')
+                    ->name(name:'password.update');
                 Route::delete(uri:'/{user}', action:'destroy')
                     ->name(name:'delete');
             }

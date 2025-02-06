@@ -1,4 +1,4 @@
-import React, { FormEventHandler } from "react";
+import React, { FormEventHandler, useRef} from "react";
 import { UserInterface } from "@/Interfaces/UserInterface";
 import { useForm } from "@inertiajs/react";
 import { Input } from '@/Components/ui/input';
@@ -12,35 +12,43 @@ interface UserPasswordUpdataProp {
 }
 
 export default function UpdatePassword({ user}: UserPasswordUpdataProp){
+    const passwordInput = useRef<HTMLInputElement>(null);
+    const currentPasswordInput = useRef<HTMLInputElement>(null);
     const {
         data,
         setData,
         errors,
-        put,
+        patch,
         reset,
         processing,
         recentlySuccessful,
     } = useForm({
-        current_password: '',
+
         password: '',
         password_confirmation: '',
     });
 
+    const updatePassword: FormEventHandler = (e) => {
+        e.preventDefault();
+
+        patch(route('user.password.update', user.id), {
+            preserveScroll: true,
+            onSuccess: () => reset(),
+            onError: (errors) => {
+                if (errors.password) {
+                    reset('password', 'password_confirmation');
+                    passwordInput.current?.focus();
+                }
+
+
+            },
+        });
+    };
     return (
 
 
-            <form className="space-y-6">
-                <div>
-                    <Label htmlFor="current_password">Current Password</Label>
-                    <Input
-                        id="current_password"
-                        type="password"
-                        value={data.current_password}
-                        onChange={(e) => setData('current_password', e.target.value)}
-                        autoComplete="current-password"
-                    />
-                    {errors.current_password && <span className="text-red-500">{errors.current_password}</span>}
-                </div>
+            <form className="space-y-6" onSubmit={updatePassword}>
+
 
                 <div>
                     <Label htmlFor="password">New Password</Label>
@@ -66,7 +74,7 @@ export default function UpdatePassword({ user}: UserPasswordUpdataProp){
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <Button type="submit" disabled={processing}>Save</Button>
+                    <Button type="submit" disabled={processing}> {processing ? 'Updating...' : 'Update Password'}</Button>
                     {recentlySuccessful && (
                         <p className="text-sm text-green-600">Saved.</p>
                     )}
