@@ -52,11 +52,54 @@ class RoleController extends Controller
     }
 
 
+    /**
+     * Show the form for creating a new role.
+     *
+     * Renders the 'Roles/Create' component using Inertia.
+     *
+     * @return \Inertia\Response Returns an Inertia response with the create role form
+     */
     public function create()
     {
         return Inertia::render(
             component:'Roles/Create'
         );
+    }
+
+    /**
+     * Store the new role
+     *
+     * @param  \Illuminate\Http\Request  $request The HTTP request instance
+     * @return \Illuminate\Http\RedirectResponse
+     *
+     *  @throws \Illuminate\Validation\ValidationException When validation fails
+     *  This method:
+     * 1. Validates the incoming request data
+     * 2. Add role within a database transaction
+     * 3. Redirects back to the edit page with success message
+     */
+    public function store(Request $request)
+    {
+        $request->validate(rules:[
+            'name'=>['required', 'string', 'max:255'],
+        ]);
+
+        try {
+            $res = DB::transaction(function()use($request){
+                return Role::create([
+                    'name'=>$request->name,
+                    'description'=>$request->description,
+                ]);
+
+
+            });
+            return Redirect::route(route:'role.edit',parameters:['role'=>$res])
+                ->with(key:'success',value:'Role Create Successfully');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return back()
+                ->with(key:'error', value:$th->getMessage(). 'on line '.$th->getLine() .' file '.$th->getFile());
+        }
     }
 
     /**

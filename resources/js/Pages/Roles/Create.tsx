@@ -38,7 +38,7 @@ export default function RoleCreate() {
         });
     const submit: FormEventHandler = (e) => {
             e.preventDefault();
-            post(route('role.update'));
+            post(route('role.store'));
         };
     return (
         <AuthenticatedLayout>

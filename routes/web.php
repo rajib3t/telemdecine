@@ -63,10 +63,12 @@ Route::group(
         /**
          * Role Routes
          * 1. GET /roles - Show a list of roles
-         * 2. GET /roles/{role}/edit  - Show a form to edit a role
-         * 3. PATCH /roles/{role} - Update a role
-         * 4. PATCH /roles/{role}/add-permission - add permission to the role
-         * 5. DELETE /roles/{role} -
+         * 2. Get /roles/create - Show form for create a new role
+         * 3. POST /roles/store - Store new role
+         * 4. GET /roles/{role}/edit  - Show a form to edit a role
+         * 5. PATCH /roles/{role} - Update a role
+         * 6. PATCH /roles/{role}/add-permission - add permission to the role
+         * 7. DELETE /roles/{role} -
          */
         Route::group(attributes:[
             'as'=>'role.',
@@ -75,9 +77,12 @@ Route::group(
 
         ],routes:function(){
             Route::get(uri:'/', action:'index')
+
                 ->name(name:'index');
             Route::get(uri:'create', action:'create')
                 ->name(name:'create');
+            Route::post(uri:'store', action:'store')
+                ->name(name:'store');
             Route::get(uri:'/{role}/edit', action:'edit')
                 ->name(name:'edit');
             Route::patch(uri:'/{role}', action:'update')
