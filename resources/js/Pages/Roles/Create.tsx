@@ -1,4 +1,4 @@
-import React ,{useState, FormEventHandler} from "react";
+import React ,{useState, FormEventHandler, useEffect} from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import BreadcrumbComponent from '@/Components/Breadcrumb';
 import { Head, usePage, useForm } from "@inertiajs/react";
@@ -28,9 +28,20 @@ interface ExtendedPageProps extends PageProps {
     };
 }
 export default function RoleCreate() {
-    const { props } = usePage<ExtendedPageProps>();
+        const { props } = usePage<ExtendedPageProps>();
         const { flash } = props;
         const [flashMessage, setFlashMessage] = useState<FlashMessageState | null>(null);
+        // Set Flash Message
+        useEffect(() => {
+            if (flash?.success || flash?.error) {
+                const type = flash.success ? "success" : "error";
+                const message = flash.success || flash.error || "";
+                setFlashMessage({ type, message });
+
+                const timer = setTimeout(() => setFlashMessage(null), 5000);
+                return () => clearTimeout(timer);
+            }
+        }, [flash]);
 
      const { data, setData, post, errors, processing } = useForm({
             name: '',

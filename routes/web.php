@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PermissionController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
@@ -128,6 +129,34 @@ Route::group(
                 ->name(name:'update');
             Route::patch(uri:'{permissionGroup}/add-role', action:'add_role')
                 ->name(name:'add.role');
+
+        });
+        /**
+         * Department Routes
+         * 1. GET /departments - Show list of departments
+         * 2. GET /departments/create - Show form for create a new department
+         * 3. POST /departments/store - To store new department into database
+         * 4. GET /department/{department}/edit - Show form for edit department
+         * 5. PATCH /departments/{department} - Update a department
+         * 6. DELETE /departments/{department} - Delete a department
+         */
+        Route::group(attributes:[
+            'as'=>'department.',
+            'prefix'=>'departments',
+            'controller'=>DepartmentController::class
+        ], routes:function(){
+            Route::get(uri:'/', action:'index')
+                ->name(name:'index');
+            Route::get(uri:'create', action:'create')
+                ->name(name:'create');
+            Route::post(uri:'store', action:'store')
+                ->name(name:'store');
+            Route::get(uri:'{department}/edit', action:'edit')
+                ->name(name:'edit');
+            Route::patch(uri:'{department}', action:'update')
+                ->name(name:'update');
+            Route::delete(uri:'/{department}', action:'destroy')
+                ->name(name:'delete');
 
         });
 

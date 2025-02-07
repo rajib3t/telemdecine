@@ -96,6 +96,24 @@ const defaultMenuItems: MenuItem[] = [
       }
     ]
   },
+  {
+    icon: Building,
+    label: 'Departments',
+    submenus:[
+        {
+            icon:List,
+            label:'List',
+            href:route('department.index'),
+            routeName:['department.index','department.edit']
+        },
+        {
+            icon:Plus,
+            label:'Create',
+            href:route('department.create'),
+            routeName:['department.create']
+        }
+    ]
+  },
 
 ];
 
@@ -128,7 +146,7 @@ const UserMenu: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/placeholder-avatar.jpg" alt={user.name} />
+            {/* <AvatarImage src="/placeholder-avatar.jpg" alt={user.name} /> */}
             <AvatarFallback>{userInitials}</AvatarFallback>
           </Avatar>
         </Button>
