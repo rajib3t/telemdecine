@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\VisitStatusEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,8 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('department_id');
             $table->string('hospital_name')->nullable();
             $table->integer('slot_number')->nullable();
-
-
+            $table->enum('status', VisitStatusEnum::keys())->nullable(VisitStatusEnum::Open->value);
             $table->timestamps();
         });
     }
