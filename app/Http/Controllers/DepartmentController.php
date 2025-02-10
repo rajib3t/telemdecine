@@ -19,10 +19,10 @@ class DepartmentController extends Controller
     public function index(Request $request)
     {
         $name = $request->name;
-        $departments = Department::with('visitDays')->when($request->name, function($q, $name){
+        $departments = Department::with(relations:'visitDays')->when(value:$request->name, callback:function($q, $name){
             $q->where('name','like',"%{$name}%");
         })
-        ->paginate(10);
+        ->paginate(perPage:10);
         return Inertia::render(
             component:'Departments/List',
             props:[
@@ -75,7 +75,7 @@ class DepartmentController extends Controller
 
             });
 
-            return redirect()->route(route:'department.edit', parameters:$res)->with('success', 'Department created successfully');
+            return redirect()->route(route:'department.edit', parameters:$res)->with(key:'success', value:'Department created successfully');
 
         } catch (\Throwable $th) {
             Log::error(message: $th->getMessage(). 'on line '.$th->getLine() .' file '.$th->getFile());
@@ -94,7 +94,7 @@ class DepartmentController extends Controller
         return Inertia::render(
             component:'Departments/Edit',
             props:[
-                'department'=>new DepartmentResource($department),
+                'department'=>new DepartmentResource(resource:$department),
 
             ]
             );
@@ -123,7 +123,7 @@ class DepartmentController extends Controller
                 $department->update(attributes:$data);
                 $department->visitDays()->delete();
                 foreach ($validate['days'] as $key => $value) {
-                    $department->visitDays()->create([
+                    $department->visitDays()->create(attributes:[
                         'day'=>$value,
 
                     ]);
@@ -132,7 +132,7 @@ class DepartmentController extends Controller
 
             });
 
-            return redirect()->route(route:'department.edit', parameters:$department)->with('success', 'Department updated successfully');
+            return redirect()->route(route:'department.edit', parameters:$department)->with(key:'success', value:'Department updated successfully');
 
 
         } catch (\Throwable $th) {

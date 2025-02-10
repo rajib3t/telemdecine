@@ -8,7 +8,7 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\VisitController;
 
 /**
  * Redirect to the dashboard if the user is authenticated
@@ -159,6 +159,36 @@ Route::group(
                 ->name(name:'delete');
 
         });
+
+        /**
+         * Visit Route
+         * 1. GET /visits
+         * 2. GET /visits/create - Show form to create a new visit
+         * 3. POST /visits/store - Store a new visit
+         * 4. GET /visits/{visit}/edit - Show edit form for visit
+         * 5. PATCH /visits/{visit} - Update a visit
+         * 6. DELETE /visits/{visit} - Delete a visit
+         */
+        Route::group(attributes:[
+            'as'=>'visit.',
+            'prefix'=>'visits',
+            'controller'=>VisitController::class
+        ], routes:function(){
+            Route::get(uri:'/', action:'index')
+                ->name(name:'index');
+            Route::get(uri:'create', action:'create')
+                ->name(name:'create');
+            Route::post(uri:'store', action:'store')
+                ->name(name:'store');
+            Route::get(uri:'{visit}/edit', action:'edit')
+                ->name(name:'edit');
+            Route::patch(uri:'{visit}', action:'update')
+                ->name(name:'update');
+            Route::delete(uri:'/{visit}', action:'destroy')
+                ->name(name:'delete');
+
+        });
+
 
     }
 );

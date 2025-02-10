@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use Inertia\Inertia;
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\PermissionGroup;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Resources\RoleResource;
+use function PHPUnit\Framework\callback;
+
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Resources\PermissionGroupResource;
-use App\Models\Permission;
 
 class PermissionController extends Controller
 {
@@ -57,8 +60,8 @@ class PermissionController extends Controller
         return Inertia::render(
             component:'Permissions/Edit',
             props:[
-                'permissionGroup' => new PermissionGroupResource($permissionGroup),
-                'roles'=>RoleResource::collection($roles),
+                'permissionGroup' => new PermissionGroupResource(resource:$permissionGroup),
+                'roles'=>RoleResource::collection(resource:$roles),
             ]
         );
      }
@@ -66,26 +69,27 @@ class PermissionController extends Controller
 
      public function update(Request $request, PermissionGroup $permissionGroup)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(rules:[
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'], // Add validation for description
         ]);
 
         try {
-            DB::transaction(function () use ($validated, $permissionGroup) {
-                $permissionGroup->update([
+            DB::transaction(callback:function () use ($validated, $permissionGroup) {
+                $permissionGroup->update(attributes:[
                     'name' => $validated['name'],
                     'description' => $validated['description'] ?? null,
                 ]);
             });
 
             return redirect()
-                ->route('permission.edit', ['permissionGroup' => $permissionGroup->id])
-                ->with('success', 'Permission updated successfully');
+                ->route(route:'permission.edit', parameters:['permissionGroup' => $permissionGroup->id])
+                ->with(key:'success', value:'Permission updated successfully');
         } catch (\Throwable $th) {
+            Log::error(message:$th->getMessage() .'on Line no '. $th->getLine() .' in file ' . $th->getFile());
             return redirect()
-                ->route('permission.edit', ['permissionGroup' => $permissionGroup->id])
-                ->with('error', $th->getMessage());
+                ->route(route:'permission.edit',parameters: ['permissionGroup' => $permissionGroup->id])
+                ->with(key:'error', value:'Something is wrong..');
         }
     }
 
@@ -95,20 +99,20 @@ class PermissionController extends Controller
         $permission = Permission::find($permission);
         if(!$permission){
             return response()->json(
-                [
+                data:[
                     'message'=>'No Permission found'
                 ],
-                404
+                status:404
             );
         }
         $role = $request->role;
         $role = Role::find($role);
         if(!$role){
             return response()->json(
-                [
+                data:[
                     'message'=>'No Role found'
                 ],
-                404
+                status:404
             );
         }
 
@@ -116,28 +120,31 @@ class PermissionController extends Controller
             if($request->checked){
                 $role->givePermissionTo($permission);
                 return response()->json(
-                    [
+                    data:[
                         'message'=>'Permission added successfully'
                     ],
-                    200
+                    status:200
                 );
             }else{
                 $role->revokePermissionTo($permission);
                 return response()->json(
-                    [
+                    data:[
                         'message'=>'Permission revoke successfully'
                     ],
-                    200
+                    status:200
                 );
             }
 
         } catch (\Throwable $th) {
+            Log::error(message:$th->getMessage() .'on Line no '. $th->getLine() .' in file ' . $th->getFile());
             return response()->json(
-                [
-                    'message'=>$th->getMessage() .'on Line no '. $th->getLine() .' in file ' . $th->getFile()
+                data:[
+                    'message'=>'Something is wrong..'
                 ],
-                400
+                status:400
             );
+
+           
         }
 
     }

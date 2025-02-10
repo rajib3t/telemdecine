@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rules\Password;
 
+use function PHPUnit\Framework\callback;
+
 class UserController extends Controller
 {
     /**
@@ -72,7 +74,7 @@ class UserController extends Controller
         return Inertia::render(
             component:'Users/Create',
             props:[
-                'roles'=>RoleResource::collection($roles)
+                'roles'=>RoleResource::collection(resource:$roles)
             ]
         );
     }
@@ -106,11 +108,11 @@ class UserController extends Controller
         ]);
 
         try {
-            DB::transaction(function()use($validated){
+            DB::transaction(callback:function()use($validated){
                 $user = User::create([
                     'name'=>$validated['name'],
                     'email'=>$validated['email'],
-                    'password' => Hash::make($validated['password']),
+                    'password' => Hash::make(value:$validated['password']),
                 ]);
 
                 $role = Role::find($validated['role']);
@@ -118,7 +120,7 @@ class UserController extends Controller
 
             });
 
-            return Redirect::route('user.index')
+            return Redirect::route(route:'user.index')
                 ->with(key:'success', value:'User Created Successfully');
         } catch (\Throwable $th) {
             Log::error(message:$th);
@@ -143,8 +145,8 @@ class UserController extends Controller
     {
         $roles = Role::all();
         return Inertia::render(component:'Users/Edit', props:[
-            'user'=>new UserResource($user),
-            'roles'=>RoleResource::collection($roles)
+            'user'=>new UserResource(resource:$user),
+            'roles'=>RoleResource::collection(resource:$roles)
 
         ]);
 
@@ -181,7 +183,7 @@ class UserController extends Controller
 
 
         try {
-            DB::transaction(function()use($validated, $user){
+            DB::transaction(callback:function()use($validated, $user){
                 $user->update(attributes:[
                     'name'=>$validated['name'],
                     'email'=>$validated['email']
@@ -206,7 +208,7 @@ class UserController extends Controller
 
     public function update_password(Request $request , User $user)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(rules:[
 
             'password' => ['required', Password::defaults(), 'confirmed'],
         ]);
@@ -248,8 +250,8 @@ class UserController extends Controller
 
 
 
-         return redirect()->route('user.index', ['page' => $redirectToPage])
-         ->with('success', 'User Deleted Successfully');
+         return redirect()->route(route:'user.index', parameters:['page' => $redirectToPage])
+         ->with(key:'success', value:'User Deleted Successfully');
 
      }
 }

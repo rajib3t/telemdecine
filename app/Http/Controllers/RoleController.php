@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use Inertia\Inertia;
 use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Models\PermissionGroup;
 use Illuminate\Support\Facades\DB;
-use App\Models\Role;
+use Illuminate\Support\Facades\Log;
 use App\Http\Resources\RoleResource;
+
+
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Resources\PermissionGroupResource;
 
@@ -43,7 +46,7 @@ class RoleController extends Controller
         return Inertia::render(
             component:'Roles/List',
             props:[
-                'roles'=>RoleResource::collection($roles),
+                'roles'=>RoleResource::collection(resource:$roles),
 
             ]
 
@@ -85,8 +88,8 @@ class RoleController extends Controller
         ]);
 
         try {
-            $res = DB::transaction(function()use($request){
-                return Role::create([
+            $res = DB::transaction(callback:function()use($request){
+                return Role::create(attributes:[
                     'name'=>$request->name,
                     'description'=>$request->description,
                 ]);
@@ -124,8 +127,8 @@ class RoleController extends Controller
         return Inertia::render(
             component:'Roles/Edit',
             props:[
-                'role'=>new RoleResource($role),
-                'permissionGroups' => Inertia::defer( fn ()=>PermissionGroupResource::collection($permissionGroups))
+                'role'=>new RoleResource(resource:$role),
+                'permissionGroups' => Inertia::defer( callback:fn ()=>PermissionGroupResource::collection($permissionGroups))
             ]
         );
     }
@@ -147,12 +150,12 @@ class RoleController extends Controller
     public function update(Request  $request, Role $role)
     {
 
-        $request->validate([
+        $request->validate(rules:[
             'name' => ['required', 'string', 'max:255'],
 
         ]);
 
-        $res = DB::transaction(function () use ($request, $role){
+        $res = DB::transaction(callback:function () use ($request, $role){
             $data = [
                 'name' => $request->name,
                 'description'=>$request->description,
@@ -163,7 +166,7 @@ class RoleController extends Controller
         });
 
         return Redirect::route(route:'role.edit', parameters:$res)
-        ->with('success','Role updated successfully');
+        ->with(key:'success',value:'Role updated successfully');
 
     }
 
@@ -193,38 +196,39 @@ class RoleController extends Controller
 
         if(!$permission){
             return response()->json(
-                [
+                data:[
                     'message'=>'No Permission found'
                 ],
-                404
+                status:404
             );
         }
         try {
             $permission = Permission::find($permission);
             if($request->checked){
-                $role->givePermissionTo($permission);
+                $role->givePermissionTo(permissions:$permission);
                 return response()->json(
-                    [
+                    data:[
                         'message'=>'Permission added successfully'
                     ],
-                    200
+                    status:200
                 );
             }else{
                 $role->revokePermissionTo($permission);
                 return response()->json(
-                    [
+                    data:[
                         'message'=>'Permission revoke successfully'
                     ],
-                    200
+                    status:200
                 );
             }
 
         } catch (\Throwable $th) {
+                Log::error(message:$th->getMessage() .'on Line no '. $th->getLine() .' in file ' . $th->getFile());
                 return response()->json(
-                    [
-                        'message'=>$th->getMessage() .'on Line no '. $th->getLine() .' in file ' . $th->getFile()
+                    data:[
+                        'message'=>'Something is wrong....'
                     ],
-                    400
+                    status:400
                 );
         }
     }
@@ -255,7 +259,7 @@ class RoleController extends Controller
 
 
 
-        return redirect()->route('role.index', ['page' => $redirectToPage])
-        ->with('success', 'Role Deleted Successfully');
+        return redirect()->route(route:'role.index', parameters:['page' => $redirectToPage])
+        ->with(key:'success', value:'Role Deleted Successfully');
     }
 }
