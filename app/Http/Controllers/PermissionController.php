@@ -144,7 +144,7 @@ class PermissionController extends Controller
                 status:400
             );
 
-           
+
         }
 
     }
