@@ -12,8 +12,13 @@ class Visit extends Model
      * @var array
      */
     protected $fillable = [
-       'date', 'department_id', 'hospital_name', 'slot_number'
+       'date', 'department_id', 'hospital_name', 'slot_number', 'status'
     ];
 
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
 
 }

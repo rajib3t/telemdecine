@@ -158,4 +158,20 @@ class DepartmentController extends Controller
          return redirect()->route(route:'department.index', parameters:['page' => $redirectToPage])
          ->with(key:'success', value:'Department Deleted Successfully');
     }
+
+
+    public function getDepartment(Department $department)
+    {
+        $days = $department->visitDays()->select('day')
+        ->pluck('day')
+        ->toArray();
+        $week = [
+            'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
+        ];
+
+        $filteredWeek = array_intersect($week, $days);
+        $days = array_keys($filteredWeek);
+        return response()
+            ->json($days);
+    }
 }

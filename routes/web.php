@@ -138,6 +138,7 @@ Route::group(
          * 4. GET /department/{department}/edit - Show form for edit department
          * 5. PATCH /departments/{department} - Update a department
          * 6. DELETE /departments/{department} - Delete a department
+         * 7. GET /departments/get-department/{department} - Get department by id and response with json
          */
         Route::group(attributes:[
             'as'=>'department.',
@@ -156,6 +157,8 @@ Route::group(
                 ->name(name:'update');
             Route::delete(uri:'/{department}', action:'destroy')
                 ->name(name:'delete');
+            Route::get(uri:'get-department/{department}', action:'getDepartment')
+                ->name(name:'get');
 
         });
 

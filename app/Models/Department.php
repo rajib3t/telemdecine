@@ -28,4 +28,10 @@ class Department extends Model
         return $this->hasMany(DepartmentVisitDay::class);
     }
 
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
+
 }

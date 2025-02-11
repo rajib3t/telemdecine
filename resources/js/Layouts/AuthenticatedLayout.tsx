@@ -50,7 +50,7 @@ const defaultMenuItems: MenuItem[] = [
             icon:List,
             label:'List',
             href:route('visit.index'),
-            routeName:['visit.index']
+            routeName:['visit.index','visit.edit']
         },
         {
             icon:Plus,

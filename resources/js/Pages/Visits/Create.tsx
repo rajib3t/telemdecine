@@ -1,4 +1,4 @@
-import React, { useState, FormEventHandler, useEffect } from "react";
+import React, { useState, FormEventHandler, useEffect, useRef } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import BreadcrumbComponent from '@/Components/Breadcrumb';
 import { Head, usePage, useForm } from "@inertiajs/react";
@@ -6,6 +6,7 @@ import { PageProps } from '@/types'
 import { FlashMessageState } from '@/Interfaces/FlashMessageState';
 import { FlashMessage } from '@/Components/FlashMessage';
 import { DatePicker } from '@/Components/DatePicker'
+import axios from "axios";
 import {
     Card,
     CardHeader,
@@ -50,7 +51,7 @@ export default function VisitCreate({departments, days}:CreateVisitProps) {
     const { props } = usePage<ExtendedPageProps>();
     const { flash } = props;
     const [flashMessage, setFlashMessage] = useState<FlashMessageState | null>(null);
-
+    const [allowedDays, setAllowedDays] = useState(days)
     // Initialize the form with proper date typing
     const { data, setData, post, processing, errors } = useForm({
         date: '',
@@ -58,6 +59,7 @@ export default function VisitCreate({departments, days}:CreateVisitProps) {
         hospital_name: '',
         slot_number: ''
     });
+
 
     // Handle flash messages
     useEffect(() => {
@@ -67,13 +69,17 @@ export default function VisitCreate({departments, days}:CreateVisitProps) {
             setFlashMessage({ type: 'error', message: flash.error });
         }
     }, [flash]);
-
+    const formatDate = (date: Date): string => {
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${year}/${month}/${day}`;
+      };
     const handleDateChange = (date: Date | undefined) => {
         // Convert the Date object to a string format your backend expects
         // Assuming your backend expects "YYYY-MM-DD" format
-        const formattedDate = date ? date.toISOString().split('T')[0] : '';
-        const formattedDate1 = date ? date.toString().split('T')[0] : '';
-        console.log(date,formattedDate, formattedDate1);
+        const formattedDate = date ? formatDate(date) : '';
+
 
         setData('date', formattedDate);
     };
@@ -83,6 +89,28 @@ export default function VisitCreate({departments, days}:CreateVisitProps) {
         post(route('visit.store'));
     };
 
+    const changeDepartment = async (value: string) => {
+        try{
+            const response = await axios.get(route('department.get', value),
+                {
+                    headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                    }
+                }
+            );
+            if (response.status === 200) {
+                setAllowedDays(response.data);
+                setData('department_id', value)
+            }
+
+
+        }catch (error) {
+
+        }
+
+      };
     return (
         <AuthenticatedLayout>
             <Head title="Create Visit" />
@@ -103,25 +131,10 @@ export default function VisitCreate({departments, days}:CreateVisitProps) {
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <Label htmlFor="date">Date</Label>
-                                <div>
-                                <DatePicker
-                                    value={data.date ? new Date(data.date) : undefined}
-                                    onChange={handleDateChange}
-                                    maxFutureDays={60}
-                                    dateFormat="dd/MM/yyyy"
-                                    allowedDays={days}
-                                />
-                                </div>
-
-                                {errors.date && <p className="text-sm text-red-600">{errors.date}</p>}
-                            </div>
-
-                            <div>
                                 <Label htmlFor="department_id">Department ID</Label>
                                 <Select
                                     value={data.department_id}
-                                    onValueChange={(value) => setData('department_id', value)}
+                                    onValueChange={changeDepartment}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select a department" />
@@ -139,6 +152,25 @@ export default function VisitCreate({departments, days}:CreateVisitProps) {
                                 </Select>
                                 {errors.department_id && <p className="text-sm text-red-600">{errors.department_id}</p>}
                             </div>
+                            <div>
+                                <Label htmlFor="date">Date</Label>
+                                <div>
+                                <DatePicker
+                                    allowPastDates = {false}
+                                    value={data.date ? new Date(data.date) : undefined}
+                                    onChange={handleDateChange}
+                                    maxFutureDays={60}
+                                    dateFormat="dd/MM/yyyy"
+                                    allowedDays={allowedDays}
+
+
+                                />
+                                </div>
+
+                                {errors.date && <p className="text-sm text-red-600">{errors.date}</p>}
+                            </div>
+
+
 
                             <div>
                                 <Label htmlFor="hospital_name">Hospital Name</Label>
@@ -163,7 +195,7 @@ export default function VisitCreate({departments, days}:CreateVisitProps) {
                             </div>
 
                             <Button type="submit" disabled={processing}>
-                                Create Visit
+                            {processing ? 'Creating...' : 'Create'}
                             </Button>
                         </form>
                     </CardContent>

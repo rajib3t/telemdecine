@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('department_id');
             $table->string('hospital_name')->nullable();
             $table->integer('slot_number')->nullable();
-            $table->enum('status', VisitStatusEnum::keys())->nullable(VisitStatusEnum::Open->value);
+            $table->enum('status', VisitStatusEnum::keys())->nullable(VisitStatusEnum::Open);
             $table->timestamps();
         });
     }
