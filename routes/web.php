@@ -4,7 +4,6 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PermissionController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
