@@ -16,71 +16,93 @@ interface DatePickerProps {
   dateFormat?: string
   onChange?: (date: Date | undefined) => void
   value?: Date
-  // New props for dynamic day selection
   allowedDays?: number[] // 0 = Sunday, 1 = Monday, etc.
   disabledDays?: number[]
+  className?: string
 }
 
 export function DatePicker({
-  allowPastDates = false,
-  maxFutureDays,
-  dateFormat = "PPP",
-  onChange,
-  value,
-  allowedDays,
-  disabledDays
-}: DatePickerProps) {
-  const [date, setDate] = React.useState<Date | undefined>(value)
+    allowPastDates = false,
+    maxFutureDays,
+    dateFormat = "PPP",
+    onChange,
+    value,
+    allowedDays,
+    disabledDays,
+    className
+  }: DatePickerProps) {
+    const [date, setDate] = React.useState<Date | undefined>(() =>
+      value ? startOfDay(value) : undefined
+    )
 
-  // Function to handle date changes
-  const handleDateChange = (newDate: Date | undefined) => {
-    setDate(newDate)
-    onChange?.(newDate)
-  }
+    React.useEffect(() => {
+      if (value) {
+        setDate(startOfDay(value))
+      }
+    }, [value])
 
-  // Function to check if a date should be disabled
-  const isDateDisabled = (date: Date) => {
-    const today = startOfDay(new Date())
-    const dayOfWeek = getDay(date)
+    const handleDateChange = React.useCallback((newDate: Date | undefined) => {
+      const normalizedDate = newDate ? startOfDay(newDate) : undefined
+      setDate(normalizedDate)
+      onChange?.(normalizedDate)
+    }, [onChange])
 
-    // Check if the day is specifically allowed
-    if (allowedDays && allowedDays.length > 0) {
-      return !allowedDays.includes(dayOfWeek)
-    }
-
-    // Check if the day is specifically disabled
-    if (disabledDays && disabledDays.includes(dayOfWeek)) {
-      return true
-    }
-
-    // Past dates check
-    if (!allowPastDates && isBefore(date, today)) {
-      return true
-    }
-
-    // Future dates check
-    if (maxFutureDays !== undefined) {
-      const maxDate = addDays(today, maxFutureDays)
-      if (isAfter(date, maxDate)) {
+    const isDateDisabled = React.useCallback((date: Date) => {
+      if (!date || isNaN(date.getTime())) {
         return true
       }
-    }
 
-    return false
-  }
+      const today = startOfDay(new Date())
+      const targetDate = startOfDay(date)
+      const dayOfWeek = getDay(targetDate)
+
+      // First check past dates
+      if (!allowPastDates && isBefore(targetDate, today)) {
+        return true
+      }
+
+      // Then check future dates
+      if (typeof maxFutureDays === 'number' && maxFutureDays >= 0) {
+        const maxDate = startOfDay(addDays(today, maxFutureDays))
+        if (isAfter(targetDate, maxDate)) {
+          return true
+        }
+      }
+
+      // Finally check day-of-week restrictions
+      if (Array.isArray(allowedDays) && allowedDays.length > 0) {
+        return !allowedDays.includes(dayOfWeek)
+      }
+
+      if (Array.isArray(disabledDays) && disabledDays.includes(dayOfWeek)) {
+        return true
+      }
+
+      return false
+    }, [allowPastDates, maxFutureDays, allowedDays, disabledDays])
+
+    const formattedDate = React.useMemo(() => {
+      try {
+        return date ? format(date, dateFormat) : undefined
+      } catch (error) {
+        console.error('Error formatting date:', error)
+        return undefined
+      }
+    }, [date, dateFormat])
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant={"outline"}
+          variant="outline"
           className={cn(
             "w-[240px] justify-start text-left font-normal",
-            !date && "text-muted-foreground"
+            !date && "text-muted-foreground",
+            className
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, dateFormat) : <span>Pick a date</span>}
+          {formattedDate ? formattedDate : <span>Pick a date</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
@@ -96,4 +118,4 @@ export function DatePicker({
   )
 }
 
-export default DatePicker;
+export default DatePicker

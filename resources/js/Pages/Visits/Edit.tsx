@@ -137,18 +137,25 @@ export default function VisitEdit({visit, departments}:EditPageProps){
             setData('date', formattedDate);
         };
 
-        const handleSubmit: FormEventHandler = (e) => {
+        const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
             e.preventDefault();
 
-            // Instead of creating a new object, update the existing form data
+            // Only proceed with date formatting if date exists and is valid
             if (data.date) {
-                const dateObj = new Date(data.date);
-                const year = dateObj.getFullYear();
-                const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-                const day = dateObj.getDate().toString().padStart(2, '0');
-                setData('date',formatDate(dateObj));
-            }
+                try {
+                    const dateObj = new Date(data.date);
 
+                    // Check if date is valid
+                    if (!isNaN(dateObj.getTime())) {
+                        const formattedDate = formatDate(dateObj);
+                        setData('date', formattedDate);
+                    }
+                } catch (error) {
+                    console.error('Error formatting date:', error);
+                    // Handle the error appropriately - maybe set an error state
+                    return;
+                }
+            }
 
             // Use patch with the existing form data
             patch(route('visit.update', visit.data.id));
@@ -233,6 +240,7 @@ export default function VisitEdit({visit, departments}:EditPageProps){
 
 
                                 />
+
                                 </div>
 
                                 {errors.date && <p className="text-sm text-red-600">{errors.date}</p>}
