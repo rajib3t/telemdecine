@@ -17,6 +17,7 @@ class DepartmentController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
+
     {
         $name = $request->name;
         $departments = Department::with(relations:'visitDays')->when(value:$request->name, callback:function($q, $name){
@@ -26,7 +27,8 @@ class DepartmentController extends Controller
         return Inertia::render(
             component:'Departments/List',
             props:[
-                'departments'=> DepartmentResource::collection(resource:$departments)
+                'departments'=> DepartmentResource::collection(resource:$departments),
+                'filters'=>$request->all()
             ]
         );
     }

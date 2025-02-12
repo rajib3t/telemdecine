@@ -49,6 +49,8 @@ interface ExtendedPageProps extends PageProps {
 }
 
 export default function UserList({ users, filters }: IndexProps) {
+
+
     const { props } = usePage<ExtendedPageProps>();
     const { flash, auth } = props;
     const authUser = auth.user;
@@ -108,7 +110,7 @@ export default function UserList({ users, filters }: IndexProps) {
     }, [flash]);
 
     const breadcrumbs = [
-        { name: "Dashboard", href: route('dashboard') },
+        { name: "Dashboard", href: route('dashboard.index') },
         { name: "Users", href: null },
 
     ];

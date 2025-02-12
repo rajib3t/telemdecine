@@ -36,7 +36,9 @@ import {Input} from '@/Components/ui/input';
 // Page Popery  Interface
 interface IndexProps {
     permissionsGroups: PermissionGroupsListInterface;
-    filters: any;
+    filters: {
+        name:string
+    };
 }
 // Global Page Property
 interface ExtendedPageProps extends PageProps {
@@ -110,7 +112,7 @@ export default function PermissionList({permissionsGroups,filters }:IndexProps) 
 
     }
     const breadcrumbs = [
-        { name: "Dashboard", href: route('dashboard') },
+        { name: "Dashboard", href: route('dashboard.index') },
         { name: "Permissions", href: null },
 
     ];

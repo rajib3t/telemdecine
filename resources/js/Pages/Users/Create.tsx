@@ -64,7 +64,7 @@ export default function CreateUser({roles}:CreateUserProps){
             };
 
     const breadcrumbs = [
-        { name: "Dashboard", href: route('dashboard') },
+        { name: "Dashboard", href: route('dashboard.index') },
         { name: "Users", href: route('user.index') },
         { name: "Create", href: null }
     ];

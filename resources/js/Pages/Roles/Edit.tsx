@@ -216,7 +216,7 @@ export default function EditRole({role, permissionGroups, filters}: EditProps) {
 
 
       const breadcrumbs = [
-        { name: "Dashboard", href: route('dashboard') },
+        { name: "Dashboard", href: route('dashboard.index') },
         { name: "Roles", href: route('role.index') },
         { name: "Edit", href: null }
     ];

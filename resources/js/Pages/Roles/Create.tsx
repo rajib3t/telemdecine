@@ -16,7 +16,7 @@ import { Input } from '@/Components/ui/input';
 import { Label } from  '@/Components/ui/label';
 import {Textarea } from '@/Components/ui/textarea';
 const breadcrumbs = [
-    { name: "Dashboard", href: route('dashboard') },
+    { name: "Dashboard", href: route('dashboard.index') },
     { name: "Roles", href: route('role.index') },
     { name: "Create", href: null }
 ];

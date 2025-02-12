@@ -51,7 +51,8 @@ class UserController extends Controller
         return Inertia::render(
             component:'Users/List',
             props:[
-                'users' => UserResource::collection(resource:$users)
+                'users' => UserResource::collection(resource:$users),
+                'filters'=>$request->all()
             ]
         );
 

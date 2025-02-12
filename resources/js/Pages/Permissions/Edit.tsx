@@ -171,7 +171,7 @@ export default function EditPermission({permissionGroup, roles, filters}:EditPro
         }
     };
     const breadcrumbs = [
-            { name: "Dashboard", href: route('dashboard') },
+            { name: "Dashboard", href: route('dashboard.index') },
             { name: "Permissions", href: route('permission.index') },
             { name: "Edit", href: null },
     ];

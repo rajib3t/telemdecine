@@ -39,7 +39,9 @@ import { url } from 'inspector';
 // Page Popery  Interface
 interface IndexProps {
     roles: RoleListInterface;
-    filters: any;
+    filters: {
+        name:string
+    };
 }
 
 // Global Page Property
@@ -110,7 +112,7 @@ export default function RoleList({ roles, filters }: IndexProps) {
         }));
     };
     const breadcrumbs = [
-        { name: "Dashboard", href: route('dashboard') },
+        { name: "Dashboard", href: route('dashboard.index') },
         { name: "Roles", href: null },
 
     ];

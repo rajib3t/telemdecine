@@ -2,14 +2,15 @@ import React ,{useState, FormEventHandler, useEffect} from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import BreadcrumbComponent from '@/Components/Breadcrumb';
 import { Head, usePage, useForm, router } from "@inertiajs/react";
-import {PageProps} from '@/types'
+import {PageProps} from '@/types';
 import {FlashMessageState} from '@/Interfaces/FlashMessageState';
 import {FlashMessage} from '@/Components/FlashMessage';
 import { Visit, Visits } from "@/Interfaces/VisitInterface";
 import { Department } from "@/Interfaces/DepartmentInterface";
 import { Edit, Search, RotateCcw } from 'lucide-react';
-import {STATUS_CLASS} from '@/Constants/Status'
-import { DatePicker } from '@/Components/DatePicker'
+import {STATUS_CLASS} from '@/Constants/Status';
+import { DatePicker } from '@/Components/DatePicker';
+import {Departments} from '@/Interfaces/DepartmentInterface';
 // Import UI card components from the custom components library
 // These components are used to create a structured card layout in the application
 import {
@@ -29,7 +30,7 @@ import {
     TableHead,  // Header cell component
 } from '@/Components/ui/table';
 import { Button } from '@/Components/ui/button';
-import { Input } from '@/Components/ui/input';
+
 
 import {
     Select,
@@ -42,7 +43,7 @@ import {
 // Each breadcrumb has a name and href property
 // href can be null for the current/last item in the navigation
 const breadcrumbs = [
-    { name: "Dashboard", href: route('dashboard') }, // Link to the dashboard page
+    { name: "Dashboard", href: route('dashboard.index') }, // Link to the dashboard page
     { name: "Visit", href: null }                    // Current page (no link)
 ];
 
@@ -55,18 +56,33 @@ interface ExtendedPageProps extends PageProps {
     };
 }
 
+// Define the props interface for the Visit List component
 interface IndexProps {
+    // visits: Contains paginated visit data and metadata
     visits: Visits;
-    filters: any;
+    // filters: Contains search/filter parameters
+    filters: {
+        start_date: string,    // Start date for filtering visits
+        end_date: string,      // End date for filtering visits
+        department: number,     // Department ID for filtering visits
+        status: string         // Status for filtering visits
+    },
+    // departments: Contains department data
+    departments: {
+        data: Departments      // Department data structure
+    },
 }
 
-export default function VisitList({visits, filters} : IndexProps){
+export default function VisitList({visits, filters, departments} : IndexProps){
+
 
     const { props } = usePage<ExtendedPageProps>();
     const { flash } = props;
     const [flashMessage, setFlashMessage] = useState<FlashMessageState | null>(null);
     const [searchParams, setSearchParams] = useState({
-            date: filters?.date || '',
+            start_date: filters?.start_date || '',
+            end_date:filters?.end_date || '',
+            department:filters?.department || '',
             status: filters?.status || ''
         });
 
@@ -96,7 +112,7 @@ export default function VisitList({visits, filters} : IndexProps){
     const handleSearch = (e: React.FormEvent) => {
             e.preventDefault();
             router.get(
-                route('user.index'),
+                route('visit.index'),
                 searchParams,
                 { preserveState: true }
             );
@@ -104,24 +120,25 @@ export default function VisitList({visits, filters} : IndexProps){
 
         const handleReset = () => {
             setSearchParams({
-                date: '',
+                start_date: '',
+                end_date:'',
+                department:'',
                 status: ''
             });
             // Redirect to the base users page without any filters
             router.get(
-                route('user.index'),
+                route('visit.index'),
                 {},
                 { preserveState: true }
             );
         };
-
-        const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            const { name, value } = e.target;
+        const handleDateChange = (field: 'start_date' | 'end_date', date: Date | undefined) => {
             setSearchParams(prev => ({
                 ...prev,
-                [name]: value
+                [field]: date ? date.toISOString().split('T')[0] : ''
             }));
         };
+
     const renderDays = (department: Department) => {
 
 
@@ -148,20 +165,13 @@ export default function VisitList({visits, filters} : IndexProps){
             const year = date.getFullYear();
             return `${year}/${month}/${day}`;
           };
-        const handleDateChange = (date: Date | undefined) => {
-            // Convert the Date object to a string format your backend expects
-            // Assuming your backend expects "YYYY-MM-DD" format
-            const formattedDate = date ? formatDate(date) : '';
 
-
-            //setData('date', formattedDate);
-        };
-        const changeStatusSearch = async (value:string)=>{
-            setSearchParams(prev =>({
+        const handleFieldChange = async (field: 'status' | 'department', value: string) => {
+            setSearchParams(prev => ({
                 ...prev,
-                [status]:value
-            }))
-        }
+                [field]: value
+            }));
+        };
     return (
         <AuthenticatedLayout>
             <Head title="Visit List" />
@@ -182,58 +192,97 @@ export default function VisitList({visits, filters} : IndexProps){
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSearch} className="space-y-4 mb-6">
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <div className="flex-1">
-                                    <DatePicker
-                                        allowPastDates = {true}
-                                        value={searchParams.date ? new Date(searchParams.date) : undefined}
-                                        onChange={handleDateChange}
+                        <Card className="w-full">
+                            <CardContent className="pt-6">
+                                <form onSubmit={handleSearch} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                        <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Start Date</label>
+                                        <DatePicker
+                                            allowPastDates={true}
+                                            value={searchParams.start_date ? new Date(searchParams.start_date) : undefined}
+                                            onChange={(date) => handleDateChange('start_date', date)}
+                                            dateFormat="dd/MM/yyyy"
+                                            placeHolder="Start Date"
+                                            className="w-full"
+                                        />
+                                        </div>
 
-                                        dateFormat="dd/MM/yyyy"
+                                        <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">End Date</label>
+                                        <DatePicker
+                                            allowPastDates={true}
+                                            value={searchParams.end_date ? new Date(searchParams.end_date) : undefined}
+                                            onChange={(date) => handleDateChange('end_date', date)}
+                                            dateFormat="dd/MM/yyyy"
+                                            placeHolder="End Date"
+                                            className="w-full"
+                                        />
+                                        </div>
 
+                                        <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Department</label>
+                                        <Select
+                                            value={searchParams.department.toString()}
+                                            onValueChange={(value) => handleFieldChange('department', value.toString())}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select a Department" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {Object.entries(departments).map(([id, name]) => (
+                                                    <SelectItem
+                                                        key={id}
+                                                        value={id}
+                                                    >
+                                                        {name.toString()}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        </div>
 
-
-                                    />
-
-                                </div>
-                                <div className="flex-1">
-                                    <Select
-                                        value={searchParams.status}
-                                        onValueChange={changeStatusSearch}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a department" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {Object.entries(STATUS_CLASS).map(([id, name]) => (
-                                                <SelectItem
-                                                    key={id}
-                                                    value={id}
-                                                >
+                                        <div className="space-y-2">
+                                        <label className="text-sm font-medium text-gray-700">Status</label>
+                                        <Select
+                                            value={searchParams.status}
+                                            onValueChange={(value) => handleFieldChange('status', value)}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select a Status" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {Object.entries(STATUS_CLASS).map(([id, name]) => (
+                                                    <SelectItem key={id} value={id}>
                                                     {id.toString()}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Button type="submit" className="w-full sm:w-auto">
-                                        <Search className="h-4 w-4 mr-2" />
-                                        Search
-                                    </Button>
-                                    <Button
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row gap-3 justify-end">
+                                        <Button
                                         type="button"
                                         variant="outline"
                                         onClick={handleReset}
                                         className="w-full sm:w-auto"
-                                    >
+                                        >
                                         <RotateCcw className="h-4 w-4 mr-2" />
                                         Reset
-                                    </Button>
-                                </div>
-                            </div>
-                        </form>
+                                        </Button>
+                                        <Button
+                                        type="submit"
+                                        className="w-full sm:w-auto"
+                                        >
+                                        <Search className="h-4 w-4 mr-2" />
+                                        Search
+                                        </Button>
+                                    </div>
+                                </form>
+                            </CardContent>
+                        </Card>
                         <Table>
                             <TableHeader>
                                 <TableRow>

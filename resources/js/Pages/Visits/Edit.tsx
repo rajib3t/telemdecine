@@ -60,7 +60,7 @@ interface EditPageProps {
 // Each breadcrumb has a name and href property
 // href can be null for the current/last item in the navigation
 const breadcrumbs = [
-    { name: "Dashboard", href: route('dashboard') }, // Link to the dashboard page
+    { name: "Dashboard", href: route('dashboard.index') }, // Link to the dashboard page
     { name: "Visit", href: route('visit.index') },
     { name: 'Edit', href:null}                    // Current page (no link)
 ];

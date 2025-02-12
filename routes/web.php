@@ -1,22 +1,23 @@
 <?php
 
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\PermissionController;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VisitController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\PermissionController;
 
 /**
  * Redirect to the dashboard if the user is authenticated
  */
 Route::redirect('/', '/dashboard');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 
 /**
@@ -42,6 +43,19 @@ Route::group(
 
     ],
     routes:function(){
+        /**
+         * Dashboard routes
+         * 1. GET /dashboard - Show the dashboard
+         */
+        Route::group(attributes:[
+            'as'=>'dashboard.',
+            'prefix'=>'dashboard',
+            'controller'=>DashboardController::class
+        ],routes:function(){
+            Route::get(uri:'/', action:'index')
+                ->name('index');
+        });
+
         /**
          * User Routes
          * 1. GET /users - Show a list of users

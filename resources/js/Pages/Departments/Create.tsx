@@ -48,7 +48,7 @@ export default function DepartmentCreate() {
     }, [flash]);
 
     const breadcrumbs = [
-        { name: "Dashboard", href: route('dashboard') },
+        { name: "Dashboard", href: route('dashboard.index') },
         { name: "Departments", href: route('department.index') },
         { name: 'Create', href: null }
     ];

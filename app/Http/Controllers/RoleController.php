@@ -47,7 +47,7 @@ class RoleController extends Controller
             component:'Roles/List',
             props:[
                 'roles'=>RoleResource::collection(resource:$roles),
-
+                'filters'=>$request->all()
             ]
 
 

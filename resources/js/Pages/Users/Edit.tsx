@@ -32,7 +32,7 @@ interface ExtendedPageProps extends PageProps {
 }
 
 const breadcrumbs = [
-    { name: "Dashboard", href: route('dashboard') },
+    { name: "Dashboard", href: route('dashboard.index') },
     { name: "Users", href: route('user.index') },
     { name: "Edit", href: null }
 ];

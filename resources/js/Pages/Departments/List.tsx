@@ -30,9 +30,7 @@ import {
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 
-interface SearchParams {
-    name: string;
-}
+
 
 interface ExtendedPageProps extends PageProps {
     flash?: {
@@ -49,7 +47,7 @@ interface IndexProps {
 }
 
 const breadcrumbs = [
-    { name: "Dashboard", href: route('dashboard') },
+    { name: "Dashboard", href: route('dashboard.index') },
     { name: "Departments", href: null }
 ];
 

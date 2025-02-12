@@ -27,7 +27,7 @@ import { Departments } from "@/Interfaces/DepartmentInterface";
 import { log } from "console";
 
 const breadcrumbs = [
-    { name: "Dashboard", href: route('dashboard') },
+    { name: "Dashboard", href: route('dashboard.index') },
     { name: "Visit", href: route('visit.index') },
     { name: "Create", href: null}
 ];

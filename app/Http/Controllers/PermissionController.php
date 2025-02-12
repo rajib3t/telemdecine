@@ -33,7 +33,8 @@ class PermissionController extends Controller
         return Inertia::render(
             component:'Permissions/List',
             props:[
-                'permissionsGroups'=>PermissionGroupResource::collection( $permissions)
+                'permissionsGroups'=>PermissionGroupResource::collection( $permissions),
+                'filters'=>$request->all()
             ]
         );
     }

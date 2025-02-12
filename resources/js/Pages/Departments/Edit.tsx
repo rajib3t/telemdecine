@@ -39,7 +39,7 @@ interface FormData {
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
 
 const breadcrumbs = [
-    { name: "Dashboard", href: route('dashboard') },
+    { name: "Dashboard", href: route('dashboard.index') },
     { name: "Departments", href: route('department.index') },
     { name: 'Edit', href: null }
 ];

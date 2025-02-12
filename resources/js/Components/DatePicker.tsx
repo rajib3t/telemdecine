@@ -19,6 +19,7 @@ interface DatePickerProps {
   allowedDays?: number[] // 0 = Sunday, 1 = Monday, etc.
   disabledDays?: number[]
   className?: string
+  placeHolder?:string
 }
 
 export function DatePicker({
@@ -29,7 +30,8 @@ export function DatePicker({
     value,
     allowedDays,
     disabledDays,
-    className
+    className,
+    placeHolder
   }: DatePickerProps) {
     const [date, setDate] = React.useState<Date | undefined>(() =>
       value ? startOfDay(value) : undefined
@@ -102,7 +104,9 @@ export function DatePicker({
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {formattedDate ? formattedDate : <span>Pick a date</span>}
+          {formattedDate ? formattedDate : <span>
+                {placeHolder ? placeHolder :'Pick a date'}
+            </span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">

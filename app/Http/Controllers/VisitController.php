@@ -20,14 +20,18 @@ class VisitController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $departments = Department::pluck('name', 'id')->toArray();
         $visits = Visit::paginate(10)
             ->onEachSide(1);
         return Inertia::render(
             component:'Visits/List',
             props:[
-                'visits'=>VisitResource::collection(resource:$visits)
+                'visits'=>VisitResource::collection(resource:$visits),
+                'departments'=>$departments,
+                'filters'=>$request->all(),
+
             ]
 
         );

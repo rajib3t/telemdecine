@@ -39,8 +39,8 @@ const defaultMenuItems: MenuItem[] = [
   {
     icon: Home,
     label: 'Dashboard',
-    href: route('dashboard'),
-    routeName: ['dashboard']
+    href: route('dashboard.index'),
+    routeName: ['dashboard.index']
   },
   {
     icon:View,
