@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\AppointmentController;
 
 /**
  * Redirect to the dashboard if the user is authenticated
@@ -202,6 +203,22 @@ Route::group(
                 ->name(name:'update');
             Route::delete(uri:'/{visit}', action:'destroy')
                 ->name(name:'delete');
+
+        });
+
+        /**
+         * Appointments Routes
+         * 1. GET /appointments - To view all open visits for add appointments
+         */
+        Route::group(attributes:[
+            'as'=>'appointment.',
+            'prefix'=>'appointments',
+            'controller'=>AppointmentController::class
+        ], routes:function(){
+            Route::get(uri:'/', action:'index')
+                ->name(name:'index');
+            Route::get(uri:'{visit}/add-patients', action:'add_patients')
+                ->name(name:'add.patient');
 
         });
 

@@ -30,7 +30,7 @@ import {
     TableHead,  // Header cell component
 } from '@/Components/ui/table';
 import { Button } from '@/Components/ui/button';
-
+import { Alert, AlertDescription } from "@/Components/ui/alert";
 
 import {
     Select,
@@ -73,6 +73,10 @@ interface IndexProps {
     },
 }
 
+
+interface ValidationErrors {
+    date?: string;
+}
 export default function VisitList({visits, filters, departments} : IndexProps){
 
 
@@ -85,8 +89,31 @@ export default function VisitList({visits, filters, departments} : IndexProps){
             department:filters?.department || '',
             status: filters?.status || ''
         });
+    const [errors, setErrors] = useState<ValidationErrors>({});
+
+    // Validate dates whenever they change
+    useEffect(() => {
+        validateDates(searchParams.start_date, searchParams.end_date);
+    }, [searchParams.start_date, searchParams.end_date]);
+
+    const validateDates = (startDate: string, endDate: string) => {
+        setErrors({});
 
 
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            console.log(start, end);
+            if (end < start) {
+                // Set the error message for the date range
+                setErrors({
+                    date: "End date cannot be before start date"
+                });
+                return false;
+            }
+        }
+        return true;
+    };
     // Effect hook to handle flash messages
     useEffect(() => {
         // Check if there's a success or error flash message
@@ -110,13 +137,28 @@ export default function VisitList({visits, filters, departments} : IndexProps){
             router.visit(route('visit.edit', visitID));
         };
     const handleSearch = (e: React.FormEvent) => {
-            e.preventDefault();
-            router.get(
-                route('visit.index'),
-                searchParams,
-                { preserveState: true }
-            );
-        };
+        e.preventDefault();
+
+        // Validate dates before submitting
+        if (!validateDates(searchParams.start_date, searchParams.end_date)) {
+            return;
+        }
+
+        // Additional validation: if one date is set, both must be set
+        if ((searchParams.start_date && !searchParams.end_date) ||
+            (!searchParams.start_date && searchParams.end_date)) {
+            setErrors({
+                date: "Both start and end dates must be set"
+            });
+            return;
+        }
+
+        router.get(
+            route('visit.index'),
+            searchParams,
+            { preserveState: true }
+        );
+    };
 
         const handleReset = () => {
             setSearchParams({
@@ -133,9 +175,21 @@ export default function VisitList({visits, filters, departments} : IndexProps){
             );
         };
         const handleDateChange = (field: 'start_date' | 'end_date', date: Date | undefined) => {
+            const formattedDate = date ? formatDate(date) : '';
+
+            // If changing end date, validate it's not before start date
+            if (field === 'end_date' && searchParams.start_date && formattedDate) {
+                validateDates(searchParams.start_date, formattedDate);
+            }
+
+            // If changing start date, validate it's not after end date
+            if (field === 'start_date' && searchParams.end_date && formattedDate) {
+                validateDates(formattedDate, searchParams.end_date);
+            }
+
             setSearchParams(prev => ({
                 ...prev,
-                [field]: date ? date.toISOString().split('T')[0] : ''
+                [field]: formattedDate
             }));
         };
 
@@ -163,7 +217,7 @@ export default function VisitList({visits, filters, departments} : IndexProps){
             const month = (date.getMonth() + 1).toString().padStart(2, '0');
             const day = date.getDate().toString().padStart(2, '0');
             const year = date.getFullYear();
-            return `${year}/${month}/${day}`;
+            return `${year}-${month}-${day}`;
           };
 
         const handleFieldChange = async (field: 'status' | 'department', value: string) => {
@@ -194,6 +248,13 @@ export default function VisitList({visits, filters, departments} : IndexProps){
                     <CardContent>
                         <Card className="w-full">
                             <CardContent className="pt-6">
+                            {errors.date && (
+                                <Alert variant="destructive">
+                                    <AlertDescription>
+                                        {errors.date}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
                                 <form onSubmit={handleSearch} className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                         <div className="space-y-2">
