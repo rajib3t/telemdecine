@@ -61,35 +61,35 @@ class AppointmentController extends Controller
 
 
     public function addPatientToVisit(Request $request, Visit $visit)
-{
-    try {
-        $patient = Patient::findOrFail($request->patientId);
+    {
+        try {
+            $patient = Patient::findOrFail($request->patientId);
 
-        // Check if patient is already attached to avoid duplicates
-        if (!$visit->patients()->where('patient_id', $patient->id)->exists()) {
-            $visit->patients()->attach($patient->id);
+            // Check if patient is already attached to avoid duplicates
+            if (!$visit->patients()->where('patient_id', $patient->id)->exists()) {
+                $visit->patients()->attach($patient->id);
+
+                return redirect()
+                    ->route('appointment.add.patient', ['visit' => $visit])
+                    ->with('success', 'Patient successfully added to visit');
+            }
 
             return redirect()
                 ->route('appointment.add.patient', ['visit' => $visit])
-                ->with('success', 'Patient successfully added to visit');
+                ->with('warning', 'Patient is already added to this visit');
+
+        } catch (ModelNotFoundException $e) {
+            Log::error($e);
+            return redirect()
+                ->route('appointment.add.patient', ['visit' => $visit])
+                ->with('error', 'Patient not found');
+        } catch (Exception $e) {
+            Log::error($e);
+            return redirect()
+                ->route('appointment.add.patient', ['visit' => $visit])
+                ->with('error', 'Failed to add patient to visit');
         }
-
-        return redirect()
-            ->route('appointment.add.patient', ['visit' => $visit])
-            ->with('warning', 'Patient is already added to this visit');
-
-    } catch (ModelNotFoundException $e) {
-        Log::error($e);
-        return redirect()
-            ->route('appointment.add.patient', ['visit' => $visit])
-            ->with('error', 'Patient not found');
-    } catch (Exception $e) {
-        Log::error($e);
-        return redirect()
-            ->route('appointment.add.patient', ['visit' => $visit])
-            ->with('error', 'Failed to add patient to visit');
     }
-}
 
 
 }
