@@ -17,7 +17,12 @@ class PatientVisit extends Pivot
     public $incrementing = true;
 
 
-
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'patient_visits';
 
     /**
      * The attributes that are mass assignable.
