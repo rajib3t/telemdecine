@@ -26,7 +26,7 @@ class Visit extends Model
 
     public function patients()
     {
-        return $this->belongsToMany(related:Patient::class)->using(class:PatientVisit::class);
+        return $this->belongsToMany(related:Patient::class)->using(class:PatientVisit::class)->withTimestamps();
 
     }
 
