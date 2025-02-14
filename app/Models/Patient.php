@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Patient extends Model
 {
+    use HasFactory  ;
     /**
      * The attributes that are mass assignable.
      *
@@ -24,4 +26,13 @@ class Patient extends Model
         'pin_code',
         'phone'
      ];
+
+
+
+     public function visit()
+     {
+         return $this->belongsToMany(related:Visit::class)->using(class:PatientVisit::class);
+     }
+
+
 }

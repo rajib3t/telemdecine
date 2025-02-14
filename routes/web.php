@@ -10,6 +10,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\PatientController;
+use App\Models\Patient;
 
 /**
  * Redirect to the dashboard if the user is authenticated
@@ -209,6 +211,7 @@ Route::group(
         /**
          * Appointments Routes
          * 1. GET /appointments - To view all open visits for add appointments
+         * 2. GET /appointments/{visit}/add-patients - Add patient to the specific visit
          */
         Route::group(attributes:[
             'as'=>'appointment.',
@@ -219,9 +222,27 @@ Route::group(
                 ->name(name:'index');
             Route::get(uri:'{visit}/add-patients', action:'add_patients')
                 ->name(name:'add.patient');
+            Route::post(uri:'{visit}/add-patient-into-visit', action:'addPatientToVisit')
+                ->name(name:'add.into.visit');
 
         });
 
+        /**
+         * Patients Routes
+         * 1. GET /patients/get - Return json patient data for autocomplete
+         * 2. POST /patients/store - Store new patient into database
+         */
+        Route::group(attributes:[
+            'as'=>'patient.',
+            'prefix'=>'patients',
+            'controller'=>PatientController::class
+        ], routes:function(){
+            Route::get(uri:'get', action:'get_patients')
+                ->name(name:'get');
+            Route::post(uri:'store', action:'store')
+                ->name(name:'store');
+
+        });
 
     }
 );

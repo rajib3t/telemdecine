@@ -50,7 +50,7 @@ const defaultMenuItems: MenuItem[] = [
             icon: List,
             label:'List',
             href:route('appointment.index'),
-            routeName:['appointment.index']
+            routeName:['appointment.index','appointment.add.patient']
         }
     ]
   },

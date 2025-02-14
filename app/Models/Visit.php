@@ -18,7 +18,16 @@ class Visit extends Model
 
     public function department()
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsTo(related:Department::class);
+    }
+
+
+
+
+    public function patients()
+    {
+        return $this->belongsToMany(related:Patient::class)->using(class:PatientVisit::class);
+
     }
 
 }
