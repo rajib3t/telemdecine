@@ -67,6 +67,7 @@ const breadcrumbs = [
 
 export default function VisitEdit({visit, departments}:EditPageProps){
 
+
      function getVisitDays(visit : Visit) {
         // This simulates the Laravel query result
         // In a real application, this would be an API call
@@ -173,7 +174,7 @@ export default function VisitEdit({visit, departments}:EditPageProps){
                     }
                 );
                 if (response.status === 200) {
-                    setAllowedDays(response.data);
+                    setAllowedDays(response.data.days);
                     setData('department_id', value)
                 }
 

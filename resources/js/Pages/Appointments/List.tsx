@@ -6,7 +6,7 @@ import {PageProps} from '@/types';
 import {FlashMessageState} from '@/Interfaces/FlashMessageState';
 import {FlashMessage} from '@/Components/FlashMessage';
 import { Visit, Visits } from "@/Interfaces/VisitInterface";
-import {BookUser, Plus }from  'lucide-react';
+import {BookUser, Plus, Eye }from  'lucide-react';
 import {Departments, Department} from '@/Interfaces/DepartmentInterface';
 import {STATUS_CLASS} from '@/Constants/Status';
 // Import UI card components from the custom components library
@@ -58,6 +58,8 @@ const breadcrumbs = [
     { name: "Appointments", href: null }                    // Current page (no link)
 ];
 export default function ListAppointment({visits}: IndexProps){
+
+
     const { props } = usePage<ExtendedPageProps>();
     const { flash } = props;
     const [flashMessage, setFlashMessage] = useState<FlashMessageState | null>(null);
@@ -142,7 +144,7 @@ export default function ListAppointment({visits}: IndexProps){
                                             <TableCell>{visit.hospital_name}</TableCell>
                                             <TableCell>{renderDays(visit.department)}</TableCell>
                                             <TableCell>{visit.slot_number}</TableCell>
-                                            <TableCell>TT</TableCell>
+                                            <TableCell>{visit.patients.length}</TableCell>
                                             <TableCell>
                                                 <div className="flex gap-2">
                                                     <TooltipProvider>
@@ -153,7 +155,7 @@ export default function ListAppointment({visits}: IndexProps){
                                                                 size="sm"
                                                                 onClick={() => handleAddPatient(visit.id)}
                                                                 >
-                                                                <Plus className="h-4 w-4" />
+                                                                <Eye className="h-4 w-4" />
                                                             </Button>
                                                             </TooltipTrigger>
                                                             <TooltipContent>

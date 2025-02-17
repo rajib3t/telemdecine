@@ -1,5 +1,6 @@
 import { Department } from "./DepartmentInterface"
 import { PaginationLink } from "@/Interfaces/PaginationLinkInterface";
+import { Patient } from "./PatientInterface";
 export interface Visit{
     id:number
     date:string
@@ -7,6 +8,7 @@ export interface Visit{
     hospital_name:string
     slot_number:number
     status:string
+    patients:Patient[]
 }
 
 

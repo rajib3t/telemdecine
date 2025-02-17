@@ -23,8 +23,8 @@ class VisitController extends Controller
     public function index(Request $request)
     {
         $departments = Department::pluck('name', 'id')->toArray();
-        $visits = Visit::paginate(10)
-            ->onEachSide(1);
+        $visits = Visit::orderBy(column:'id',direction:'DESC')->with('department')->paginate(10);
+
         return Inertia::render(
             component:'Visits/List',
             props:[
@@ -73,7 +73,7 @@ class VisitController extends Controller
     {
         $validate = $request->validate(rules:[
             'department_id'=>'required',
-            'date'=>'required|date',
+            'date'=>['required','date','unique:visits,date'],
             'hospital_name'=>'required',
             'slot_number' =>'required',
 
@@ -121,7 +121,7 @@ class VisitController extends Controller
         return Inertia::render(
             component:'Visits/Edit',
             props:[
-                'visit'=>new VisitResource(resource:$visit),
+                'visit'=>new VisitResource(resource:$visit->load('department')),
                 'departments'=>$departments,
             ]
         );
@@ -134,7 +134,7 @@ class VisitController extends Controller
     {
         $validate = $request->validate(rules:[
             'department_id'=>'required',
-            'date'=>'required|date',
+            'date'=>['required','date','unique:visits,date,'.$visit->id],
             'hospital_name'=>'required',
             'slot_number' =>'required',
 

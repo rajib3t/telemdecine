@@ -17,13 +17,15 @@ class VisitResource extends JsonResource
     {
 
         return [
-            'id'=>$this->id,
-            'date' => (new Carbon( $this->date))->setTimezone('Asia/Kolkata')->format('D M j Y'),
-            'department'=> new DepartmentResource($this->department()->first()),
-            'hospital_name'=>$this->hospital_name,
-            'slot_number'=>$this->slot_number,
-            'status' =>$this->status
-
+            'id' => $this->id,
+            'date' => Carbon::parse($this->date)
+                           ->setTimezone('Asia/Kolkata')
+                           ->format('D M j Y'),
+            'department' => new DepartmentResource($this->whenLoaded('department')),
+            'hospital_name' => $this->hospital_name,
+            'slot_number' => $this->slot_number,
+            'status' => $this->status,
+            'patients' => PatientResource::collection($this->whenLoaded('patients'))
         ];
     }
 }

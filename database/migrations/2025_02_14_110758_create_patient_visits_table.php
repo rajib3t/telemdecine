@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date(column:'date')->nullable();
             $table->text(column:'description')->nullable();
             $table->text(column:'advice_transcription')->nullable();
-            $table->enum(column:'status', allowed:PatientVisitEnum::keys())->default(PatientVisitEnum::PENDING);
+            $table->enum(column:'status', allowed:PatientVisitEnum::keys())->default(PatientVisitEnum::Pending);
             $table->unsignedBigInteger(column:'created_by')->nullable();
             $table->timestamps();
         });

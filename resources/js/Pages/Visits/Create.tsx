@@ -101,8 +101,11 @@ export default function VisitCreate({departments, days}:CreateVisitProps) {
                 }
             );
             if (response.status === 200) {
-                setAllowedDays(response.data);
+
+
+                setAllowedDays(response.data.days);
                 setData('department_id', value)
+                setData('slot_number', response.data.department.max_patients)
             }
 
 

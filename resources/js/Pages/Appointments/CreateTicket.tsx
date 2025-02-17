@@ -10,7 +10,7 @@ import { Visit, Visits } from "@/Interfaces/VisitInterface";
 import axios from "axios";
 import {Patient} from '@/Interfaces/PatientInterface';
 import CreateNewPatient from '@/Components/CreateNewPatient'
-
+import {VISIT_CLASS} from '@/Constants/VisitStatus'
 // Import UI card components from the custom components library
 // These components are used to create a structured card layout in the application
 import {
@@ -19,6 +19,16 @@ import {
     CardTitle,   // Title component for the card
     CardContent, // Content section of the card
 } from '@/Components/ui/card';
+// Import UI table components from the custom components library
+// These components are used to create structured data tables in the application
+import {
+    Table,      // Main table container component
+    TableBody,  // Container for table rows
+    TableRow,   // Individual table row component
+    TableCell,  // Individual table cell component
+    TableHeader,// Header section of the table
+    TableHead,  // Header cell component
+} from '@/Components/ui/table';
 // Import custom UI input component for form fields
 import { Input } from '@/Components/ui/input';
 // Import custom UI label component for form field labels
@@ -55,6 +65,7 @@ interface CreateTicketProps {
 export default function CreateTicket({visit}: CreateTicketProps){
 
 
+
     const { props } = usePage<ExtendedPageProps>();
     const { flash } = props;
     const [flashMessage, setFlashMessage] = useState<FlashMessageState | null>(null);
@@ -71,6 +82,24 @@ export default function CreateTicket({visit}: CreateTicketProps){
         district:''
     });
 
+
+    // Effect hook to handle flash messages
+    useEffect(() => {
+        // Check if there's a success or error flash message
+        if (flash?.success || flash?.error) {
+            // Determine the type of message (success or error)
+            const type = flash.success ? "success" : "error";
+            // Get the message content
+            const message = flash.success || flash.error || "";
+            // Set the flash message state
+            setFlashMessage({ type, message });
+
+            // Set a timer to automatically clear the flash message after 5 seconds
+            const timer = setTimeout(() => setFlashMessage(null), 5000);
+            // Cleanup function to clear the timer if component unmounts
+            return () => clearTimeout(timer);
+        }
+    }, [flash]); // Re-run effect when flash prop changes
     // Debounced search function with API call
   const debouncedSearch = useCallback(
     _.debounce(async (searchValue: string) => {
@@ -311,6 +340,64 @@ export default function CreateTicket({visit}: CreateTicketProps){
                                     </div>
                                 </form>
 
+                            </CardContent>
+                        </Card>
+                        <Card className="mt-4">
+                            <CardHeader>
+                                <CardTitle className="text-sm">
+                                    Book Patient List
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                 <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-2/12 font-bold">Hospital ID</TableHead>
+                                            <TableHead className="w-2/12 font-bold">Name</TableHead>
+                                            <TableHead className="w-2/12 font-bold">Gender</TableHead>
+                                            <TableHead className="w-2/12 font-bold">Phone</TableHead>
+                                            <TableHead className="w-2/12 font-bold">Status</TableHead>
+                                            <TableHead className="w-2/12 font-bold">Action</TableHead>
+                                        </TableRow>
+
+                                    </TableHeader>
+                                    <TableBody>
+                                        {visit.data.patients.length ? (
+                                            visit.data.patients.map((patient : Patient)=>(
+                                                <TableRow key={patient.id}>
+                                                    <TableCell>
+                                                        {patient.hospital_id}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {patient.name}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {patient.gender}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {patient.phone}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className={`px-2 py-1 rounded text-white ${VISIT_CLASS[patient.visit_status  as keyof typeof VISIT_CLASS] ?? ''}`}>
+                                                            {patient.visit_status}
+                                                        </span>
+
+                                                    </TableCell>
+
+                                                    <TableCell>
+
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                            ):(
+                                            <TableRow>
+                                                <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
+                                                    No patients
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
                             </CardContent>
                         </Card>
                     </CardContent>

@@ -23,8 +23,9 @@ class AppointmentController extends Controller
     public function index()
     {
         // Retrieve all open visits, ordered by ID in descending order
-        $visits = Visit::orderBy(column: 'id', direction: 'DESC')
+        $visits = Visit::with(['department','patients.visit'])->orderBy(column: 'id', direction: 'DESC')
             ->where('status', VisitStatusEnum::Open)
+
             ->get();
 
         // Render the Appointments/List component using Inertia
@@ -47,13 +48,15 @@ class AppointmentController extends Controller
     public function add_patients(Visit $visit)
     {
         // Render the Appointments/CreateTicket component using Inertia
+        // Load the visit with its relationships once and reuse
+        $visit->load(['department', 'patients.visit']);  // Added .visit to properly load the visit relationship
 
         return Inertia::render(
             component:'Appointments/CreateTicket',
             props:[
                 // Pass the visit data to the component, wrapped in a VisitResource collection
 
-                'visit'=>new VisitResource($visit),
+                'visit'=>new VisitResource($visit)
             ]
         );
     }
@@ -76,7 +79,7 @@ class AppointmentController extends Controller
 
             return redirect()
                 ->route('appointment.add.patient', ['visit' => $visit])
-                ->with('warning', 'Patient is already added to this visit');
+                ->with('error', 'Patient is already added to this visit');
 
         } catch (ModelNotFoundException $e) {
             Log::error($e);

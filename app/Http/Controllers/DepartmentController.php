@@ -174,6 +174,10 @@ class DepartmentController extends Controller
         $filteredWeek = array_intersect($week, $days);
         $days = array_keys($filteredWeek);
         return response()
-            ->json($days);
+            ->json(data:[
+                'department'=>$department,
+                'days'=>$days,
+                'message'=>'successfully fetched department'
+            ]);
     }
 }

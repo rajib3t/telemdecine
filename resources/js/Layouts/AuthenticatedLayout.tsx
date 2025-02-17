@@ -73,6 +73,24 @@ const defaultMenuItems: MenuItem[] = [
     ]
   },
   {
+    icon: Building,
+    label: 'Departments',
+    submenus:[
+        {
+            icon:List,
+            label:'List',
+            href:route('department.index'),
+            routeName:['department.index','department.edit']
+        },
+        {
+            icon:Plus,
+            label:'Create',
+            href:route('department.create'),
+            routeName:['department.create']
+        }
+    ]
+  },
+  {
     icon: Users,
     label: 'User Management',
     submenus: [
@@ -126,24 +144,7 @@ const defaultMenuItems: MenuItem[] = [
       }
     ]
   },
-  {
-    icon: Building,
-    label: 'Departments',
-    submenus:[
-        {
-            icon:List,
-            label:'List',
-            href:route('department.index'),
-            routeName:['department.index','department.edit']
-        },
-        {
-            icon:Plus,
-            label:'Create',
-            href:route('department.create'),
-            routeName:['department.create']
-        }
-    ]
-  },
+
 
 ];
 

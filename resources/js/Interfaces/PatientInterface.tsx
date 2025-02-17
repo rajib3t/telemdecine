@@ -10,6 +10,12 @@ export interface Patient {
     district:string;
     state:string;
     pin_code:string;
+    advice_transcription?:string;
+    created_by?:string;
+    description?:string;
+    visit_date?:string;
+    visit_status?:string;
+
   }
 
 

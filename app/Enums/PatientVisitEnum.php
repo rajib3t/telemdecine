@@ -4,10 +4,10 @@ namespace App\Enums;
 
 enum PatientVisitEnum:string
 {
-    case PENDING = 'pending';
-    case CONFIRM = 'confirm';
-    case CANCEL = 'cancel';
-    case ATTENDED = 'attended';
+    case Pending = 'PENDING';
+    case Confirm = 'CONFIRM';
+    case Cancel = 'CANCEL';
+    case Attended = 'ATTENDED';
 
 
 
