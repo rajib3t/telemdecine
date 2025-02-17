@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PatientGenderEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('hospital_id')->unique()->index();
             $table->string('name')->nullable();
-            $table->string('gender')->nullable();
+            $table->enum('gender', PatientGenderEnum::keys())->nullable();
             $table->date('dob')->nullable();
             $table->string('address')->nullable();
             $table->string('city')->nullable();

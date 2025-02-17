@@ -3,6 +3,7 @@ import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
 import DatePicker from '@/Components/DatePicker';
+import { Gender } from '@/Constants/Gender';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -152,8 +153,22 @@ const CreateNewPatient: React.FC<CreateNewPatientProps> = ({ onPatientCreated })
       });
     }
   };
+  function capitalize(str:string) {
+    // Check if input is a string
+    if (typeof str !== 'string') {
+        throw new TypeError('Input must be a string');
+    }
 
+    // Handle empty string
+    if (str.length === 0) {
+        return str;
+    }
+
+    // Capitalize first letter and convert rest to lowercase
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
   const handleGenderChange = (value: string): void => {
+
     setFormData(prev => ({
       ...prev,
       gender: value
@@ -200,7 +215,7 @@ const CreateNewPatient: React.FC<CreateNewPatientProps> = ({ onPatientCreated })
       setIsSubmitting(true);
 
       const response = await axios.post(route('patient.store'), formData);
-        console.log(response);
+
 
       if (response.data.status === true) {
         onPatientCreated?.({
@@ -267,6 +282,8 @@ const CreateNewPatient: React.FC<CreateNewPatientProps> = ({ onPatientCreated })
       }));
 
 };
+
+
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
@@ -334,9 +351,12 @@ const CreateNewPatient: React.FC<CreateNewPatientProps> = ({ onPatientCreated })
                 <SelectValue placeholder="Select Gender" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
+              {Object.entries(Gender).map(([key, value]) => (
+
+                  <SelectItem key={key} value={value}>
+                    {value}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {errors.gender && (

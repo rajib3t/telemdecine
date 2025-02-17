@@ -383,7 +383,6 @@ export default function CreateTicket({visit}: CreateTicketProps){
                                                         </span>
 
                                                     </TableCell>
-
                                                     <TableCell>
 
                                                     </TableCell>

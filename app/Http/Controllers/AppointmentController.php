@@ -23,7 +23,7 @@ class AppointmentController extends Controller
     public function index()
     {
         // Retrieve all open visits, ordered by ID in descending order
-        $visits = Visit::with(['department','patients.visit'])->orderBy(column: 'id', direction: 'DESC')
+        $visits = Visit::with(relations:['department','patients.visit'])->orderBy(column: 'id', direction: 'DESC')
             ->where('status', VisitStatusEnum::Open)
 
             ->get();
@@ -49,14 +49,14 @@ class AppointmentController extends Controller
     {
         // Render the Appointments/CreateTicket component using Inertia
         // Load the visit with its relationships once and reuse
-        $visit->load(['department', 'patients.visit']);  // Added .visit to properly load the visit relationship
+        $visit->load(relations:['department', 'patients.visit']);  // Added .visit to properly load the visit relationship
 
         return Inertia::render(
             component:'Appointments/CreateTicket',
             props:[
                 // Pass the visit data to the component, wrapped in a VisitResource collection
 
-                'visit'=>new VisitResource($visit)
+                'visit'=>new VisitResource(resource:$visit)
             ]
         );
     }
@@ -73,24 +73,24 @@ class AppointmentController extends Controller
                 $visit->patients()->attach($patient->id);
 
                 return redirect()
-                    ->route('appointment.add.patient', ['visit' => $visit])
-                    ->with('success', 'Patient successfully added to visit');
+                    ->route(route:'appointment.add.patient', parameters:['visit' => $visit])
+                    ->with(key:'success', value:'Patient successfully added to visit');
             }
 
             return redirect()
-                ->route('appointment.add.patient', ['visit' => $visit])
-                ->with('error', 'Patient is already added to this visit');
+                ->route(route:'appointment.add.patient', parameters:['visit' => $visit])
+                ->with(key:'error', value:'Patient is already added to this visit');
 
         } catch (ModelNotFoundException $e) {
-            Log::error($e);
+            Log::error(message:$e);
             return redirect()
-                ->route('appointment.add.patient', ['visit' => $visit])
-                ->with('error', 'Patient not found');
+                ->route(route:'appointment.add.patient', parameters:['visit' => $visit])
+                ->with(key:'error', value:'Patient not found');
         } catch (Exception $e) {
-            Log::error($e);
+            Log::error(message:$e);
             return redirect()
-                ->route('appointment.add.patient', ['visit' => $visit])
-                ->with('error', 'Failed to add patient to visit');
+                ->route(route:'appointment.add.patient', parameters:['visit' => $visit])
+                ->with(key:'error', value:'Failed to add patient to visit');
         }
     }
 

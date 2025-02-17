@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Patient;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\PatientResource;
+use Illuminate\Validation\Rule;
+use App\Enums\PatientGenderEnum;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Resources\PatientResource;
 use function PHPUnit\Framework\callback;
 
 class PatientController extends Controller
@@ -34,7 +37,7 @@ class PatientController extends Controller
             return response()
                 ->json(data:[
                     'message' => 'Patient Found',
-                    'patients' => PatientResource::collection($patients),
+                    'patients' => PatientResource::collection(resource:$patients),
                     "status" => true,
                 ], status:200);
         }
@@ -43,45 +46,43 @@ class PatientController extends Controller
 
     public function store(Request $request)
     {
-        $validate = $request->validate([
+
+        $validated = $request->validate(rules:[
             'hospital_id' => ['required', 'unique:patients,hospital_id'],
             'name' => 'required|string',
-            'phone' => ['required','numeric', 'unique:patients,phone'],
+            'phone' => ['required', 'numeric', 'unique:patients,phone'],
             'district' => 'required|string',
-
+            'gender' => ['required', 'string', Rule::enum(type:PatientGenderEnum::class)],
+            'dob' => ['nullable', 'date'],
+            'address' => ['nullable', 'string'],
+            'city' => ['nullable', 'string'],
+            'state' => ['nullable', 'string'],
+            'pin_code' => ['nullable', 'string'],
         ]);
 
+
         try {
-           $res =  DB::transaction(callback:function () use($request){
-                $data = [
-                    'hospital_id'=>$request->hospital_id,
-                    'name'=>$request->name,
-                    'gender'=>$request->gender,
-                    'dob'=>$request->dob,
-                    'address' => $request->address,
-                    'city'=>$request->city,
-                    'district'=>$request->district,
-                    'state'=>$request->state,
-                    'pin_code'=>$request->pin_code,
-                    'phone'=>$request->phone,
-                ];
-                return $patient = Patient::create($data);
+            $patient = DB::transaction(callback:function () use ($validated) {
+                return Patient::create([
+                    ...$validated,
+                    'gender' => strtoupper($validated['gender'])
+                ]);
             });
+
             return response()->json(data:[
-                'message' => 'Patient Created',
-                'patient'=>new PatientResource(resource:$res),
-                "status" => true,
+                'message' => 'Patient Created Successfully',
+                'patient' => new PatientResource(resource:$patient),
+                'status' => true
             ], status:201);
 
-
         } catch (\Throwable $th) {
+            Log::error(message:'Patient creation failed: ' . $th->getMessage());
+
             return response()->json(data:[
-                'message' => 'Patient Not Created',
-                "status" => false,
+                'message' => 'Failed to create patient',
+                'status' => false
             ], status:409);
-
         }
-
     }
 
 

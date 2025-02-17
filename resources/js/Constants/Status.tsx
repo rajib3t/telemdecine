@@ -6,3 +6,5 @@ export const STATUS_CLASS : Record<Status, string > = {
     CLOSED: 'bg-blue-500',
     OPEN:'bg-yellow-500',
 }
+
+

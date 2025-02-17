@@ -121,7 +121,7 @@ class VisitController extends Controller
         return Inertia::render(
             component:'Visits/Edit',
             props:[
-                'visit'=>new VisitResource(resource:$visit->load('department')),
+                'visit'=>new VisitResource(resource:$visit->load(relations:'department')),
                 'departments'=>$departments,
             ]
         );
