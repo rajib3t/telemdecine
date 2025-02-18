@@ -39,6 +39,7 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/Components/ui/select"
+import { log } from "console";
 // Define the navigation breadcrumbs array
 // Each breadcrumb has a name and href property
 // href can be null for the current/last item in the navigation
@@ -78,7 +79,7 @@ interface ValidationErrors {
     date?: string;
 }
 export default function VisitList({visits, filters, departments} : IndexProps){
-
+    console.log(visits);
 
     const { props } = usePage<ExtendedPageProps>();
     const { flash } = props;

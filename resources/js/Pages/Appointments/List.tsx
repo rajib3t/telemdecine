@@ -58,7 +58,7 @@ const breadcrumbs = [
     { name: "Appointments", href: null }                    // Current page (no link)
 ];
 export default function ListAppointment({visits}: IndexProps){
-
+     console.log(visits);
 
     const { props } = usePage<ExtendedPageProps>();
     const { flash } = props;

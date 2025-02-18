@@ -1,3 +1,48 @@
+/**
+ * Department List Component
+ *
+ * @component
+ * @description Renders a list of departments with search functionality
+ *
+ * @typedef {Object} ExtendedPageProps
+ * @extends PageProps
+ * @property {Object} [flash] - Flash messages container
+ * @property {string} [flash.success] - Success message
+ * @property {string} [flash.error] - Error message
+ *
+ * @typedef {Object} IndexProps
+ * @property {Departments} departments - Department data with pagination
+ * @property {Object} filters - Search filters
+ * @property {string} [filters.name] - Department name filter
+ *
+ * @param {IndexProps} props - Component props
+ * @param {Departments} props.departments - Paginated departments data
+ * @param {Object} props.filters - Search filters object
+ *
+ * @returns {JSX.Element} Rendered DepartmentList component
+ *
+ * @example
+ * <DepartmentList
+ *   departments={departmentsData}
+ *   filters={{ name: 'Search Term' }}
+ * />
+ *
+ * @features
+ * - Displays departments in a tabulated format
+ * - Search functionality by department name
+ * - Reset search filters
+ * - Edit department functionality
+ * - Delete department functionality
+ * - Flash messages for operations feedback
+ * - Pagination support
+ * - Responsive design
+ * - Shows visit days for each department
+ *
+ * @hooks
+ * - useState: Manages local state for flash messages and search parameters
+ * - useEffect: Handles flash message display and cleanup
+ * - usePage: Accesses page props from Inertia
+ */
 import React, { useEffect, useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, usePage, router } from '@inertiajs/react';

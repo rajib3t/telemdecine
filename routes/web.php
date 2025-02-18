@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\ConfirmAppointmentController;
 use App\Http\Controllers\PatientController;
 use App\Models\Patient;
 
@@ -38,7 +39,7 @@ Route::middleware('auth')->group(function () {
 
 /**
  * User Authentication Routes
- *
+ * Middleware auth
  */
 Route::group(
     attributes:[
@@ -56,7 +57,7 @@ Route::group(
             'controller'=>DashboardController::class
         ],routes:function(){
             Route::get(uri:'/', action:'index')
-                ->name('index');
+                ->name(name:'index');
         });
 
         /**
@@ -212,6 +213,7 @@ Route::group(
          * Appointments Routes
          * 1. GET /appointments - To view all open visits for add appointments
          * 2. GET /appointments/{visit}/add-patients - Add patient to the specific visit
+         * 3. POST /appointments/{visit}/add-patient-into-visit - Add new patient into database
          */
         Route::group(attributes:[
             'as'=>'appointment.',
@@ -242,6 +244,15 @@ Route::group(
             Route::post(uri:'store', action:'store')
                 ->name(name:'store');
 
+        });
+
+        Route::group(attributes:[
+            'as'=>'confirm.appointment.',
+            'prefix'=>'confirm-appointment',
+            'controller'=>ConfirmAppointmentController::class
+        ],routes:function(){
+            Route::get(uri:'/', action:'index')
+                ->name(name:'index');
         });
 
     }

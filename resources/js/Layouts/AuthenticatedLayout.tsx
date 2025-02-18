@@ -15,7 +15,7 @@ import {
   SheetTrigger,
 } from "@/Components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-import { Menu, User, Home, Settings, LogOut, Bell, LucideIcon, Users, Building, Shield, List, Plus, View, BookUser } from "lucide-react";
+import { Menu, User, Home, Settings, LogOut, Bell, LucideIcon, Users, Building, Shield, List, Plus, View, BookUser, CalendarCheck2 } from "lucide-react";
 import { Link, usePage } from '@inertiajs/react';
 import { Toaster } from "@/Components/ui/toaster";
 
@@ -41,6 +41,12 @@ const defaultMenuItems: MenuItem[] = [
     label: 'Dashboard',
     href: route('dashboard.index'),
     routeName: ['dashboard.index']
+  },
+  {
+    icon:CalendarCheck2,
+    label:'Confirmations',
+    href:route('confirm.appointment.index'),
+    routeName:['confirm.appointment.index']
   },
   {
     icon: BookUser,
