@@ -246,13 +246,20 @@ Route::group(
 
         });
 
+        /**
+         * Confirm Appointment Routes
+         * 1. GET /confirm-appointment - Show the confirm appointment page
+         * 2. GET /confirm-appointment/{visit}/patient-list - Show patient list for specific visit
+         */
         Route::group(attributes:[
             'as'=>'confirm.appointment.',
             'prefix'=>'confirm-appointment',
             'controller'=>ConfirmAppointmentController::class
         ],routes:function(){
             Route::get(uri:'/', action:'index')
-                ->name(name:'index');
+            ->name(name:'index');
+            Route::get(uri:'{visit}/patient-list', action:'patientList')
+            ->name(name:'patient.list');
         });
 
     }

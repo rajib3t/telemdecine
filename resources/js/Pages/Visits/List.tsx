@@ -79,7 +79,7 @@ interface ValidationErrors {
     date?: string;
 }
 export default function VisitList({visits, filters, departments} : IndexProps){
-    console.log(visits);
+
 
     const { props } = usePage<ExtendedPageProps>();
     const { flash } = props;

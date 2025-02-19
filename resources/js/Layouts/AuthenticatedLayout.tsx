@@ -46,7 +46,7 @@ const defaultMenuItems: MenuItem[] = [
     icon:CalendarCheck2,
     label:'Confirmations',
     href:route('confirm.appointment.index'),
-    routeName:['confirm.appointment.index']
+    routeName:['confirm.appointment.index','confirm.appointment.patient.list']
   },
   {
     icon: BookUser,
