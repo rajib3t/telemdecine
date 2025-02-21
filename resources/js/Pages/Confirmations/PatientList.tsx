@@ -7,6 +7,7 @@ import { FlashMessage } from '@/Components/FlashMessage';
 import { FlashMessageState } from '@/Interfaces/FlashMessageState';
 import BreadcrumbComponent from '@/Components/Breadcrumb';
 import { VISIT_CLASS } from "@/Constants/VisitStatus";
+import  {UserListInterface} from "@/Interfaces/UserInterface";
 // Import UI card components from the custom components library
 // These components are used to create a structured card layout in the application
 import {
@@ -31,7 +32,8 @@ import ConfirmPatient from "@/Components/ConfirmPatient";
 interface PatientListPageProps {
     visit:{
         data:Visit
-    }
+    },
+    users: UserListInterface;
 }
 
 // Interface extending PageProps to include flash message properties
@@ -54,8 +56,8 @@ const breadcrumbs = [
     { name : "Confirmation Appointment", href:route('confirm.appointment.index')},
     { name:'Patient List', href: null}
 ]
-export default function PatientList({visit}:PatientListPageProps){
-    console.log(visit);
+export default function PatientList({visit, users}:PatientListPageProps){
+
     const { props } = usePage<ExtendedPageProps>();
     const { flash } = props;
     const [flashMessage, setFlashMessage] = useState<FlashMessageState | null>(null);
@@ -135,7 +137,7 @@ export default function PatientList({visit}:PatientListPageProps){
                                             </span>
                                         </TableCell>
                                         <TableCell>
-                                            <ConfirmPatient visit={visit.data} patient={patient} />
+                                            <ConfirmPatient visit={visit.data} patient={patient} users={users} />
                                         </TableCell>
                                     </TableRow>
                                    ))

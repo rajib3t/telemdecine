@@ -23,19 +23,27 @@ import { Visit } from '@/Interfaces/VisitInterface';
 import { Patient } from '@/Interfaces/PatientInterface';
 import { Button } from "@/Components/ui/button";
 import { CalendarCheck } from 'lucide-react';
-
+import {UserListInterface, UserInterface} from '@/Interfaces/UserInterface';
+import {VisitStatus } from '@/types/status';
 interface ConfirmPatientProp {
     visit: Visit;
     patient: Patient;
-    users?: Array<{ id: string; name: string }>;
+    users?: UserListInterface
 }
 
-export default function ConfirmPatient({ visit, patient, users = [] }: ConfirmPatientProp) {
+const Status : Record<VisitStatus, string >  = {
+    PENDING: 'PENDING',
+    CONFIRM: 'CONFIRM',
+    CANCEL: 'CANCEL',
+    ATTENDED: 'ATTENDED'
+};
+export default function ConfirmPatient({ visit, patient, users }: ConfirmPatientProp) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isConfirm, setIsConfirm] = useState<boolean>(false);
     const [status, setStatus] = useState<string>("");
     const [selectedUser, setSelectedUser] = useState<string>("");
     const [notes, setNotes] = useState<string>("");
+    console.log(users);
 
     const handleSubmit = () => {
         setIsConfirm(true);
@@ -67,18 +75,20 @@ export default function ConfirmPatient({ visit, patient, users = [] }: ConfirmPa
                     <div className="space-y-2">
                         <Label htmlFor="status">Status</Label>
                         <Select
-                            value={status}
+                            value={patient.visit_status}
                             onValueChange={setStatus}
                         >
                             <SelectTrigger id="status">
                                 <SelectValue placeholder="Select status" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="confirmed">Confirmed</SelectItem>
-                                <SelectItem value="cancelled">Cancelled</SelectItem>
-                                <SelectItem value="rescheduled">Rescheduled</SelectItem>
-                                <SelectItem value="no-show">No Show</SelectItem>
+                                {Object.keys(Status).map((key) => (
+                                    <SelectItem key={key} value={key}>
+                                        {key}
+                                    </SelectItem>
+                                ))}
                             </SelectContent>
+
                         </Select>
                     </div>
 
@@ -92,8 +102,8 @@ export default function ConfirmPatient({ visit, patient, users = [] }: ConfirmPa
                                 <SelectValue placeholder="Select user" />
                             </SelectTrigger>
                             <SelectContent>
-                                {users.map(user => (
-                                    <SelectItem key={user.id} value={user.id}>
+                               {users?.data.map((user: UserInterface) => (
+                                    <SelectItem key={user.id} value={user.id.toString()}>
                                         {user.name}
                                     </SelectItem>
                                 ))}
