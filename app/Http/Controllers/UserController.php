@@ -58,6 +58,11 @@ class UserController extends Controller
 
     }
 
+    public function getUsers()
+    {
+        $users = User::all();
+        return response()->json(data:UserResource::collection(resource:$users));
+    }
 
     /**
      * Show the form for creating a new user.

@@ -91,6 +91,8 @@ Route::group(
                     ->name(name:'password.update');
                 Route::delete(uri:'/{user}', action:'destroy')
                     ->name(name:'delete');
+                Route::get(uri:'get', action:'getUsers')
+                    ->name(name:'get');
             }
         );
         /**

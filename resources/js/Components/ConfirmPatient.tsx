@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { PageProps } from '@/types';
+import {  usePage} from '@inertiajs/react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -23,33 +25,76 @@ import { Visit } from '@/Interfaces/VisitInterface';
 import { Patient } from '@/Interfaces/PatientInterface';
 import { Button } from "@/Components/ui/button";
 import { CalendarCheck } from 'lucide-react';
-import {UserListInterface, UserInterface} from '@/Interfaces/UserInterface';
-import {VisitStatus } from '@/types/status';
+import { UserListInterface, UserInterface } from '@/Interfaces/UserInterface';
+import { VisitStatus } from '@/types/status';
+
 interface ConfirmPatientProp {
     visit: Visit;
     patient: Patient;
-    users?: UserListInterface
+    users?: UserListInterface;
 }
 
-const Status : Record<VisitStatus, string >  = {
+const Status: Record<VisitStatus, string> = {
     PENDING: 'PENDING',
     CONFIRM: 'CONFIRM',
     CANCEL: 'CANCEL',
     ATTENDED: 'ATTENDED'
 };
+
+// ConfirmPatient FormData
+interface ConfirmPatientFormData {
+    status: string;
+    createdBy: string;
+    notes: string;
+}
+interface ExtendedPageProps extends PageProps {
+    auth:{
+        user:{
+            id:number;
+            email:string;
+            name:string;
+        }
+    }
+
+}
 export default function ConfirmPatient({ visit, patient, users }: ConfirmPatientProp) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isConfirm, setIsConfirm] = useState<boolean>(false);
-    const [status, setStatus] = useState<string>("");
-    const [selectedUser, setSelectedUser] = useState<string>("");
+    const [status, setStatus] = useState<string>(patient.visit_status as string || "");
+
     const [notes, setNotes] = useState<string>("");
-    console.log(users);
+    const [createByUsers, setCreateByUsers] = useState<UserInterface[] | null>(null);
+     // Page Props
+    const { props } = usePage<ExtendedPageProps>();
+    const { auth } = props;
+
+    const [formData, setFormData] = useState<ConfirmPatientFormData>({
+        status: patient.visit_status as string || "",
+        createdBy:auth?.user?.id.toString() || "",
+        notes: "",
+    });
 
     const handleSubmit = () => {
         setIsConfirm(true);
         // Add your submission logic here
         setIsConfirm(false);
         setIsOpen(false);
+    };
+
+    useEffect(() => {
+        initiateCreateByUsers();
+    }, []);
+
+    const initiateCreateByUsers = async () => {
+        try {
+            const response = await fetch(route('user.get'));
+            const data = await response.json();
+            setCreateByUsers(data);
+
+
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
     };
 
     return (
@@ -75,7 +120,7 @@ export default function ConfirmPatient({ visit, patient, users }: ConfirmPatient
                     <div className="space-y-2">
                         <Label htmlFor="status">Status</Label>
                         <Select
-                            value={patient.visit_status}
+                            value={status}
                             onValueChange={setStatus}
                         >
                             <SelectTrigger id="status">
@@ -88,21 +133,22 @@ export default function ConfirmPatient({ visit, patient, users }: ConfirmPatient
                                     </SelectItem>
                                 ))}
                             </SelectContent>
-
                         </Select>
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="user">Assigned To</Label>
                         <Select
-                            value={selectedUser}
-                            onValueChange={setSelectedUser}
+                            value={formData.createdBy}
+                            onValueChange={(value) =>
+                                setFormData({ ...formData, createdBy: value })
+                            }
                         >
                             <SelectTrigger id="user">
                                 <SelectValue placeholder="Select user" />
                             </SelectTrigger>
                             <SelectContent>
-                               {users?.data.map((user: UserInterface) => (
+                                {createByUsers?.map((user: UserInterface) => (
                                     <SelectItem key={user.id} value={user.id.toString()}>
                                         {user.name}
                                     </SelectItem>
