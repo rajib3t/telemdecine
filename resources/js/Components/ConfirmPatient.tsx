@@ -60,7 +60,7 @@ interface ExtendedPageProps extends PageProps {
 export default function ConfirmPatient({ visit, patient, users }: ConfirmPatientProp) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isConfirm, setIsConfirm] = useState<boolean>(false);
-    const [status, setStatus] = useState<string>(patient.visit_status as string || "");
+
 
     const [notes, setNotes] = useState<string>("");
     const [createByUsers, setCreateByUsers] = useState<UserInterface[] | null>(null);
@@ -120,8 +120,8 @@ export default function ConfirmPatient({ visit, patient, users }: ConfirmPatient
                     <div className="space-y-2">
                         <Label htmlFor="status">Status</Label>
                         <Select
-                            value={status}
-                            onValueChange={setStatus}
+                            value={formData.status}
+                            onValueChange={(value)=>setFormData({...formData, status:value})}
                         >
                             <SelectTrigger id="status">
                                 <SelectValue placeholder="Select status" />
